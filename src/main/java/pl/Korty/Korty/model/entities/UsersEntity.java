@@ -1,4 +1,4 @@
-package com.squash.squashcourts.model.entities;
+package pl.Korty.Korty.model.entities;
 
 
 import com.squash.squashcourts.model.enums.StatusEnum;
