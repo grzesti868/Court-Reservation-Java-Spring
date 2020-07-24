@@ -19,8 +19,7 @@ public class Squash_CourtsEntities {
     public Squash_CourtsEntities() {
 
     }
-    public Squash_CourtsEntities(Long id, Long id_address, Integer fields_num) {
-        this.id = id;
+    public Squash_CourtsEntities(Long id_address, Integer fields_num) {
         this.id_address = id_address;
         this.fields_num = fields_num;
     }

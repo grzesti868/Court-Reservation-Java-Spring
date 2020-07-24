@@ -35,8 +35,7 @@ public class ReservationsEntity {
     @Column
     private Long id_user;
 
-    public ReservationsEntity(Long id, String login, Date start_date, Date end_date, Long id_court, Integer people_num, String additional_info, Long id_user) {
-        this.id = id;
+    public ReservationsEntity(String login, Date start_date, Date end_date, Long id_court, Integer people_num, String additional_info, Long id_user) {
         this.login = login;
         this.start_date = start_date;
         this.end_date = end_date;

@@ -30,8 +30,7 @@ public class AddressesEntity {
     public AddressesEntity() {
     }
 
-    public AddressesEntity(Long id, String street, Integer building_num, Integer apartment_num, String city, String postal_code, String country) {
-        this.id = id;
+    public AddressesEntity(String street, Integer building_num, Integer apartment_num, String city, String postal_code, String country) {
         this.street = street;
         this.building_num = building_num;
         this.apartment_num = apartment_num;

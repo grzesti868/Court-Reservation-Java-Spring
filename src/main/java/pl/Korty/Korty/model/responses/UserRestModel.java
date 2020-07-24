@@ -1,45 +1,23 @@
-package pl.Korty.Korty.model.entities;
+package pl.Korty.Korty.model.responses;
 
-
-import pl.Korty.Korty.model.enums.StatusEnum;
+import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.enums.SexEnum;
+import pl.Korty.Korty.model.enums.StatusEnum;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 
-@Entity
-@Table(name = "users")
-public class UsersEntity {
+public class UserRestModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
-
-    @Column
     private String login;
-
-    @Column
     private String password;
-
-    @Column
     private String email;
-
-    @Column
     private String firstname;
-
-    @Column
     private String lastname;
-
-    @Column
     private SexEnum sex;
-
-    @Column
-    private  Long id_address;
-
-    @Column
+    private Long id_address;
     private StatusEnum status;
 
-
-    public UsersEntity(String login, String password, String email, String firstname, String lastname, SexEnum sex, Long id_address, StatusEnum status) {
+    public UserRestModel(String login, String password, String email, String firstname, String lastname, SexEnum sex, Long id_address, StatusEnum status) {
         this.login = login;
         this.password = password;
         this.email = email;
@@ -50,11 +28,19 @@ public class UsersEntity {
         this.status = status;
     }
 
-    public UsersEntity() {
+    public UserRestModel() {
     }
 
-    public Long getId() {
-        return id;
+    public UserRestModel(final UsersEntity entity) {
+        this.login = entity.getLogin();
+        this.password = entity.getPassword();
+        this.email = entity.getEmail();
+        this.firstname = entity.getFirstname();
+        this.lastname = entity.getLastname();
+        this.sex = entity.getSex();
+        this.id_address = entity.getId_address();
+        this.status = entity.getStatus();
+
     }
 
     public String getLogin() {
