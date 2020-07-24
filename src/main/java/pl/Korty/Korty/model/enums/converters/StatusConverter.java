@@ -1,6 +1,7 @@
-package com.squash.squashcourts.model.enums.converters;
+package pl.Korty.Korty.model.enums.converters;
 
-import com.squash.squashcourts.model.enums.StatusEnum;
+import pl.Korty.Korty.model.enums.StatusEnum;
+
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

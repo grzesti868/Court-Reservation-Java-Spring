@@ -1,4 +1,4 @@
-package com.squash.squashcourts.model.enums;
+package pl.Korty.Korty.model.enums;
 
 public enum StatusEnum {
     Active("1"), Disabled("0");

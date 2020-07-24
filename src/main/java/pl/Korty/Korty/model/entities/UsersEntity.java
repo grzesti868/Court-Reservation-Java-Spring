@@ -1,8 +1,8 @@
 package pl.Korty.Korty.model.entities;
 
 
-import com.squash.squashcourts.model.enums.StatusEnum;
-import com.squash.squashcourts.model.enums.SexEnum;
+import pl.Korty.Korty.model.enums.StatusEnum;
+import pl.Korty.Korty.model.enums.SexEnum;
 
 import javax.persistence.*;
 
