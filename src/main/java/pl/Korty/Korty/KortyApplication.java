@@ -1,13 +1,13 @@
-package com.squash.squashcourts;
+package pl.Korty.Korty;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SquashCourtsApplication {
+public class KortyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SquashCourtsApplication.class, args);
+		SpringApplication.run(KortyApplication.class, args);
 	}
 
 }
