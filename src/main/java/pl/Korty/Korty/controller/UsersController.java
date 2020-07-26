@@ -2,6 +2,7 @@ package pl.Korty.Korty.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.responses.UserRestModel;
 import pl.Korty.Korty.model.services.UserService;
 
@@ -28,13 +29,19 @@ public class UsersController {
     }
 
     @GetMapping("{login}")
-    public ResponseEntity<UserRestModel> getClientByName(@PathVariable final String login) {
+    public ResponseEntity<UserRestModel> getUserByName(@PathVariable final String login) {
         return ResponseEntity.ok(userService.getByLogin(login));
     }
 
-    @PostMapping(
-            consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> addClient(@RequestBody final UserRestModel user) {
         return ResponseEntity.ok(userService.add(user));
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<UserRestModel> updateUserById(@PathVariable Long id,@RequestBody final UserRestModel user){
+        return ResponseEntity.ok(userService.update(id,user));
+    }
+
+
 }

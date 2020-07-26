@@ -88,4 +88,36 @@ public class UsersEntity {
     public StatusEnum getStatus() {
         return status;
     }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public void setSex(SexEnum sex) {
+        this.sex = sex;
+    }
+
+    public void setId_address(Long id_address) {
+        this.id_address = id_address;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
 }

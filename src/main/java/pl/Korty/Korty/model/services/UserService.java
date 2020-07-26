@@ -29,6 +29,19 @@ public class UserService {
         return userRepository.save(mapRestModel(user)).getId();
     }
 
+    public UserRestModel update(final Long id, final UserRestModel user) {
+
+        UsersEntity userToUpdate = userRepository.findById(id).get();
+        userToUpdate.setEmail(user.getEmail());
+        userToUpdate.setFirstname(user.getFirstname());
+        userToUpdate.setLastname(user.getLastname());
+        userToUpdate.setLogin(user.getLogin());
+        userToUpdate.setPassword(user.getPassword());
+        userToUpdate.setSex(user.getSex());
+        userToUpdate.setId_address(user.getId_address());
+        return new UserRestModel(userRepository.save(userToUpdate));
+    }
+
     private UsersEntity mapRestModel(final UserRestModel model) {
        return new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getId_address(),  model.getStatus());
     }
