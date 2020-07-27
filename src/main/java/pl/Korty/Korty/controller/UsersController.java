@@ -1,5 +1,6 @@
 package pl.Korty.Korty.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.entities.UsersEntity;
@@ -23,9 +24,9 @@ public class UsersController {
 
     @GetMapping
     public ResponseEntity<List<UserRestModel>> listAllUsers() {
-        final List<UserRestModel> clientList = userService.getAll();
+        final List<UserRestModel> userList = userService.getAll();
 
-        return ResponseEntity.ok(clientList);
+        return ResponseEntity.ok(userList);
     }
 
     @GetMapping("{login}")
@@ -34,14 +35,18 @@ public class UsersController {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> addClient(@RequestBody final UserRestModel user) {
+    public ResponseEntity<Long> addUser(@RequestBody final UserRestModel user) {
         return ResponseEntity.ok(userService.add(user));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<UserRestModel> updateUserById(@PathVariable Long id,@RequestBody final UserRestModel user){
+    public ResponseEntity<UserRestModel> updateUserById(@PathVariable final Long id,@RequestBody final UserRestModel user){
         return ResponseEntity.ok(userService.update(id,user));
     }
 
-
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable final Long id){
+        userService.deleteByID(id);
+        return new ResponseEntity<>("User has been deleted.", HttpStatus.OK);
+    }
 }

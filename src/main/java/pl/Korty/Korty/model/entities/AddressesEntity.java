@@ -66,4 +66,29 @@ public class AddressesEntity {
     public String getCountry() {
         return country;
     }
+
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public void setBuilding_num(Integer building_num) {
+        this.building_num = building_num;
+    }
+
+    public void setApartment_num(Integer apartment_num) {
+        this.apartment_num = apartment_num;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setPostal_code(String postal_code) {
+        this.postal_code = postal_code;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 }

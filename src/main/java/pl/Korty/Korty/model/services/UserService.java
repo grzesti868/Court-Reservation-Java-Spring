@@ -39,7 +39,12 @@ public class UserService {
         userToUpdate.setPassword(user.getPassword());
         userToUpdate.setSex(user.getSex());
         userToUpdate.setId_address(user.getId_address());
+        userToUpdate.setStatus(user.getStatus());
         return new UserRestModel(userRepository.save(userToUpdate));
+    }
+
+    public void deleteByID(final long id){
+        userRepository.deleteById(id);
     }
 
     private UsersEntity mapRestModel(final UserRestModel model) {
