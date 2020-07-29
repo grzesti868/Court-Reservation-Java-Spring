@@ -13,9 +13,6 @@ public class ReservationsEntity {
     private Long id;
 
     @Column
-    private String login;
-
-    @Column
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date start_date;
 
@@ -24,25 +21,25 @@ public class ReservationsEntity {
     private Date end_date;
 
     @Column
-    private Long id_court;
-
-    @Column
     private Integer people_num;
 
     @Column
     private String additional_info;
 
-    @Column
-    private Long id_user;
+    @ManyToOne
+    @JoinColumn(name = "id_court",referencedColumnName = "id")
+    private Squash_CourtsEntity reservationSquashCourt;
 
-    public ReservationsEntity(String login, Date start_date, Date end_date, Long id_court, Integer people_num, String additional_info, Long id_user) {
-        this.login = login;
+
+    @ManyToOne
+    @JoinColumn(name="id_user")
+    private UsersEntity reservationUser;
+
+    public ReservationsEntity(Date start_date, Date end_date,Integer people_num, String additional_info) {
         this.start_date = start_date;
         this.end_date = end_date;
-        this.id_court = id_court;
         this.people_num = people_num;
         this.additional_info = additional_info;
-        this.id_user = id_user;
     }
 
     public ReservationsEntity() {
@@ -50,10 +47,6 @@ public class ReservationsEntity {
 
     public Long getId() {
         return id;
-    }
-
-    public String getLogin() {
-        return login;
     }
 
     public Date getStart_date() {
@@ -64,10 +57,6 @@ public class ReservationsEntity {
         return end_date;
     }
 
-    public Long getId_court() {
-        return id_court;
-    }
-
     public Integer getPeople_num() {
         return people_num;
     }
@@ -76,7 +65,37 @@ public class ReservationsEntity {
         return additional_info;
     }
 
-    public Long getId_user() {
-        return id_user;
+    public Squash_CourtsEntity getReservationSquashCourt() { return reservationSquashCourt; }
+
+    public UsersEntity getReservationUser() {
+        return reservationUser;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStart_date(Date start_date) {
+        this.start_date = start_date;
+    }
+
+    public void setEnd_date(Date end_date) {
+        this.end_date = end_date;
+    }
+
+    public void setPeople_num(Integer people_num) {
+        this.people_num = people_num;
+    }
+
+    public void setAdditional_info(String additional_info) {
+        this.additional_info = additional_info;
+    }
+
+    public void setReservationSquashCourt(Squash_CourtsEntity reservationSquashCourt) {
+        this.reservationSquashCourt = reservationSquashCourt;
+    }
+
+    public void setReservationUser(UsersEntity reservationUser) {
+        this.reservationUser = reservationUser;
     }
 }

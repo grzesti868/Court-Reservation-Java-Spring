@@ -5,6 +5,7 @@ import pl.Korty.Korty.model.enums.StatusEnum;
 import pl.Korty.Korty.model.enums.SexEnum;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -33,24 +34,27 @@ public class UsersEntity {
     private SexEnum sex;
 
     @Column
-    private  Long id_address;
-
-    @Column
     private StatusEnum status;
 
+    @OneToOne
+    @JoinColumn(name = "id_address", referencedColumnName = "id")
+    private AddressesEntity addressesEntity;
 
-    public UsersEntity(String login, String password, String email, String firstname, String lastname, SexEnum sex, Long id_address, StatusEnum status) {
+    @OneToMany(mappedBy = "reservationUser")
+    private List<ReservationsEntity> reservationsEntity;
+
+    public UsersEntity() {
+    }
+
+
+    public UsersEntity(String login, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status) {
         this.login = login;
         this.password = password;
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.sex = sex;
-        this.id_address = id_address;
         this.status = status;
-    }
-
-    public UsersEntity() {
     }
 
     public Long getId() {
@@ -81,12 +85,20 @@ public class UsersEntity {
         return sex;
     }
 
-    public Long getId_address() {
-        return id_address;
-    }
-
     public StatusEnum getStatus() {
         return status;
+    }
+
+    public AddressesEntity getAddressesEntity() {
+        return addressesEntity;
+    }
+
+    public List<ReservationsEntity> getReservationsEntity() {
+        return reservationsEntity;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setLogin(String login) {
@@ -113,11 +125,15 @@ public class UsersEntity {
         this.sex = sex;
     }
 
-    public void setId_address(Long id_address) {
-        this.id_address = id_address;
-    }
-
     public void setStatus(StatusEnum status) {
         this.status = status;
+    }
+
+    public void setAddressesEntity(AddressesEntity addressesEntity) {
+        this.addressesEntity = addressesEntity;
+    }
+
+    public void setReservationsEntity(List<ReservationsEntity> reservationsEntity) {
+        this.reservationsEntity = reservationsEntity;
     }
 }

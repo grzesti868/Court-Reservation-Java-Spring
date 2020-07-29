@@ -32,14 +32,17 @@ public class UserService {
     public UserRestModel update(final Long id, final UserRestModel user) {
 
         UsersEntity userToUpdate = userRepository.findById(id).get();
+
         userToUpdate.setEmail(user.getEmail());
         userToUpdate.setFirstname(user.getFirstname());
         userToUpdate.setLastname(user.getLastname());
         userToUpdate.setLogin(user.getLogin());
         userToUpdate.setPassword(user.getPassword());
         userToUpdate.setSex(user.getSex());
-        userToUpdate.setId_address(user.getId_address());
         userToUpdate.setStatus(user.getStatus());
+        userToUpdate.setAddressesEntity(user.getAddressesEntity());
+        userToUpdate.setReservationsEntity(user.getReservationsEntity());
+
         return new UserRestModel(userRepository.save(userToUpdate));
     }
 
@@ -48,11 +51,11 @@ public class UserService {
     }
 
     private UsersEntity mapRestModel(final UserRestModel model) {
-       return new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getId_address(),  model.getStatus());
+       return new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
     }
 
     public UserRestModel getByLogin(final String login) {
-        return new UserRestModel(userRepository.getByLogin(login));
+        return new UserRestModel(userRepository.findByLogin(login));
     }
 
 }

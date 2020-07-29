@@ -45,7 +45,7 @@ public class AddressesController {
         return ResponseEntity.ok(addressService.update(id,address));
     }
 
-    @DeleteMapping("{id")
+    @DeleteMapping("{id}")
     public ResponseEntity<String> deleteAddress(@RequestParam final Long id){
         addressService.deleteByID(id);
         return ResponseEntity.ok("Address has been deleted");

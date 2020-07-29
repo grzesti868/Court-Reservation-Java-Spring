@@ -47,11 +47,11 @@ public class AddressService {
         addressRepository.deleteById(id);
     }
 
-    private AddressesEntity mapRestModel(final AddressRestModel model) {
-        return new AddressesEntity(model.getStreet(), model.getBuilding_num(), model.getApartment_num(), model.getCity(), model.getPostal_code(), model.getCountry());
-    }
-
     public AddressRestModel getById(final Long id) {
         return new AddressRestModel(addressRepository.getOne(id));
+    }
+
+    private AddressesEntity mapRestModel(final AddressRestModel model) {
+        return new AddressesEntity(model.getStreet(), model.getBuilding_num(), model.getApartment_num(), model.getCity(), model.getPostal_code(), model.getCountry());
     }
 }

@@ -1,10 +1,13 @@
 package pl.Korty.Korty.model.responses;
 
+import pl.Korty.Korty.model.entities.AddressesEntity;
+import pl.Korty.Korty.model.entities.ReservationsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
 
 import javax.persistence.Column;
+import java.util.List;
 
 public class UserRestModel {
 
@@ -14,18 +17,20 @@ public class UserRestModel {
     private String firstname;
     private String lastname;
     private SexEnum sex;
-    private Long id_address;
     private StatusEnum status;
+    private AddressesEntity addressesEntity;
+    private List<ReservationsEntity> reservationsEntity;
 
-    public UserRestModel(String login, String password, String email, String firstname, String lastname, SexEnum sex, Long id_address, StatusEnum status) {
+    public UserRestModel(String login, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status, AddressesEntity addressesEntity, List<ReservationsEntity> reservationsEntity) {
         this.login = login;
         this.password = password;
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.sex = sex;
-        this.id_address = id_address;
         this.status = status;
+        this.addressesEntity = addressesEntity;
+        this.reservationsEntity = reservationsEntity;
     }
 
     public UserRestModel() {
@@ -38,9 +43,9 @@ public class UserRestModel {
         this.firstname = entity.getFirstname();
         this.lastname = entity.getLastname();
         this.sex = entity.getSex();
-        this.id_address = entity.getId_address();
         this.status = entity.getStatus();
-
+        this.addressesEntity = entity.getAddressesEntity();
+        this.reservationsEntity = entity.getReservationsEntity();
     }
 
     public String getLogin() {
@@ -67,11 +72,15 @@ public class UserRestModel {
         return sex;
     }
 
-    public Long getId_address() {
-        return id_address;
-    }
-
     public StatusEnum getStatus() {
         return status;
+    }
+
+    public List<ReservationsEntity> getReservationsEntity() {
+        return reservationsEntity;
+    }
+
+    public AddressesEntity getAddressesEntity() {
+        return addressesEntity;
     }
 }

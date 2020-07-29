@@ -10,6 +10,6 @@ import pl.Korty.Korty.model.entities.UsersEntity;
 @Repository
 public interface UserRepository extends JpaRepository<UsersEntity,Long> {
 
-    UsersEntity getByLogin(String login);
+    UsersEntity findByLogin(String login);
 
 }
