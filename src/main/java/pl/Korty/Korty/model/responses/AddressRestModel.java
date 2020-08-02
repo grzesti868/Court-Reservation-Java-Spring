@@ -61,4 +61,16 @@ public class AddressRestModel {
     public String getCountry() {
         return country;
     }
+
+    @Override
+    public String toString() {
+        return "AddressRestModel{" +
+                "street='" + street + '\'' +
+                ", building_num=" + building_num +
+                ", apartment_num=" + apartment_num +
+                ", city='" + city + '\'' +
+                ", postal_code='" + postal_code + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
 }

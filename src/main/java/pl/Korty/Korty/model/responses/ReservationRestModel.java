@@ -20,19 +20,19 @@ public class ReservationRestModel {
     private Integer people_num;
     private String additional_info;
     private Squash_CourtsEntity squash_courtsEntity;
-    private UsersEntity usersEntity;
+    private UserRestModel userRestModel;
 
 
     public ReservationRestModel() {
     }
 
-    public ReservationRestModel(Date start_date, Date end_date, Integer people_num, String additional_info, Squash_CourtsEntity squash_courtsEntity, UsersEntity usersEntity) {
+    public ReservationRestModel(Date start_date, Date end_date, Integer people_num, String additional_info, Squash_CourtsEntity squash_courtsEntity, UserRestModel userRestModel) {
         this.start_date = start_date;
         this.end_date = end_date;
         this.people_num = people_num;
         this.additional_info = additional_info;
         this.squash_courtsEntity = squash_courtsEntity;
-        this.usersEntity = usersEntity;
+        this.userRestModel = userRestModel;
     }
 
     public ReservationRestModel(ReservationsEntity entity) {
@@ -41,7 +41,7 @@ public class ReservationRestModel {
         this.people_num = entity.getPeople_num();
         this.additional_info = entity.getAdditional_info();
         this.squash_courtsEntity = entity.getReservationSquashCourt();
-        this.usersEntity = entity.getReservationUser();
+        this.userRestModel = new UserRestModel(entity.getReservationUser());
     }
 
     public Date getStart_date() {
@@ -64,7 +64,19 @@ public class ReservationRestModel {
         return squash_courtsEntity;
     }
 
-    public UsersEntity getUsersEntity() {
-        return usersEntity;
+    public UserRestModel getUserRestModel() {
+        return userRestModel;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationRestModel{" +
+                "start_date=" + start_date +
+                ", end_date=" + end_date +
+                ", people_num=" + people_num +
+                ", additional_info='" + additional_info + '\'' +
+                ", squash_courtsEntity=" + squash_courtsEntity +
+                ", userRestModel=" + userRestModel +
+                '}';
     }
 }

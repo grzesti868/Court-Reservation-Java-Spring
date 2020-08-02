@@ -91,4 +91,17 @@ public class AddressesEntity {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    @Override
+    public String toString() {
+        return "AddressesEntity{" +
+                "id=" + id +
+                ", street='" + street + '\'' +
+                ", building_num=" + building_num +
+                ", apartment_num=" + apartment_num +
+                ", city='" + city + '\'' +
+                ", postal_code='" + postal_code + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
 }

@@ -3,6 +3,7 @@ package pl.Korty.Korty.model.entities;
 
 import pl.Korty.Korty.model.enums.StatusEnum;
 import pl.Korty.Korty.model.enums.SexEnum;
+import pl.Korty.Korty.model.responses.UserRestModel;
 
 import javax.persistence.*;
 import java.util.List;
@@ -36,11 +37,11 @@ public class UsersEntity {
     @Column
     private StatusEnum status;
 
-    @OneToOne
+    @OneToOne(targetEntity = AddressesEntity.class,cascade = CascadeType.ALL)
     @JoinColumn(name = "id_address", referencedColumnName = "id")
     private AddressesEntity addressesEntity;
 
-    @OneToMany(mappedBy = "reservationUser")
+    @OneToMany(mappedBy = "reservationUser",cascade = CascadeType.ALL)
     private List<ReservationsEntity> reservationsEntity;
 
     public UsersEntity() {
@@ -97,10 +98,6 @@ public class UsersEntity {
         return reservationsEntity;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setLogin(String login) {
         this.login = login;
     }
@@ -135,5 +132,21 @@ public class UsersEntity {
 
     public void setReservationsEntity(List<ReservationsEntity> reservationsEntity) {
         this.reservationsEntity = reservationsEntity;
+    }
+
+    @Override
+    public String toString() {
+        return "UsersEntity{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", sex=" + sex +
+                ", status=" + status +
+                ", addressesEntity=" + addressesEntity +
+                ", reservationsEntity=" + reservationsEntity +
+                '}';
     }
 }

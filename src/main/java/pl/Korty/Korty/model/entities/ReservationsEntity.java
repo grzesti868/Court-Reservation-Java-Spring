@@ -71,10 +71,6 @@ public class ReservationsEntity {
         return reservationUser;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setStart_date(Date start_date) {
         this.start_date = start_date;
     }
@@ -97,5 +93,18 @@ public class ReservationsEntity {
 
     public void setReservationUser(UsersEntity reservationUser) {
         this.reservationUser = reservationUser;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationsEntity{" +
+                "id=" + id +
+                ", start_date=" + start_date +
+                ", end_date=" + end_date +
+                ", people_num=" + people_num +
+                ", additional_info='" + additional_info + '\'' +
+                ", reservationSquashCourt=" + reservationSquashCourt +
+                ", reservationUser=" + reservationUser +
+                '}';
     }
 }

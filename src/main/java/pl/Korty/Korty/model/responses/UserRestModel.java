@@ -8,6 +8,7 @@ import pl.Korty.Korty.model.enums.StatusEnum;
 
 import javax.persistence.Column;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserRestModel {
 
@@ -18,10 +19,10 @@ public class UserRestModel {
     private String lastname;
     private SexEnum sex;
     private StatusEnum status;
-    private AddressesEntity addressesEntity;
-    private List<ReservationsEntity> reservationsEntity;
+    private AddressRestModel addressRestModel;
+    private List<ReservationRestModel> reservationRestModels;
 
-    public UserRestModel(String login, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status, AddressesEntity addressesEntity, List<ReservationsEntity> reservationsEntity) {
+    public UserRestModel(String login, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status, AddressRestModel addressRestModel, List<ReservationRestModel> reservationRestModels) {
         this.login = login;
         this.password = password;
         this.email = email;
@@ -29,8 +30,8 @@ public class UserRestModel {
         this.lastname = lastname;
         this.sex = sex;
         this.status = status;
-        this.addressesEntity = addressesEntity;
-        this.reservationsEntity = reservationsEntity;
+        this.addressRestModel = addressRestModel;
+        this.reservationRestModels = reservationRestModels;
     }
 
     public UserRestModel() {
@@ -44,8 +45,8 @@ public class UserRestModel {
         this.lastname = entity.getLastname();
         this.sex = entity.getSex();
         this.status = entity.getStatus();
-        this.addressesEntity = entity.getAddressesEntity();
-        this.reservationsEntity = entity.getReservationsEntity();
+        this.addressRestModel = new AddressRestModel(entity.getAddressesEntity());
+        this.reservationRestModels = entity.getReservationsEntity().stream().map(ReservationRestModel::new).collect(Collectors.toList());
     }
 
     public String getLogin() {
@@ -76,11 +77,26 @@ public class UserRestModel {
         return status;
     }
 
-    public List<ReservationsEntity> getReservationsEntity() {
-        return reservationsEntity;
+    public AddressRestModel getAddressRestModel() {
+        return addressRestModel;
     }
 
-    public AddressesEntity getAddressesEntity() {
-        return addressesEntity;
+    public List<ReservationRestModel> getReservationRestModels() {
+        return reservationRestModels;
+    }
+
+    @Override
+    public String toString() {
+        return "UserRestModel{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", sex=" + sex +
+                ", status=" + status +
+                ", addressRestModel=" + addressRestModel +
+                ", reservationRestModels=" + reservationRestModels +
+                '}';
     }
 }

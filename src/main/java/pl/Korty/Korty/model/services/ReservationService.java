@@ -1,14 +1,12 @@
 package pl.Korty.Korty.model.services;
 
 import org.springframework.stereotype.Service;
-import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
+import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.ReservationRepository;
-import pl.Korty.Korty.model.responses.AddressRestModel;
+import pl.Korty.Korty.model.repositories.UserRepository;
 import pl.Korty.Korty.model.responses.ReservationRestModel;
-import pl.Korty.Korty.model.responses.UserRestModel;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,9 +15,12 @@ public class ReservationService {
 
     final private ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationRepository reservationService) {
+    final private UserRepository userRepository;
+
+    public ReservationService(ReservationRepository reservationService, UserRepository userRepository) {
         this.reservationRepository = reservationService;
 
+        this.userRepository = userRepository;
     }
 
     public List<ReservationRestModel> getAll(){
@@ -45,7 +46,7 @@ public class ReservationService {
         reservationToUpdate.setPeople_num(reservation.getPeople_num());
         reservationToUpdate.setAdditional_info(reservation.getAdditional_info());
         reservationToUpdate.setReservationSquashCourt(reservation.getSquash_courtsEntity());
-        reservationToUpdate.setReservationUser(reservation.getUsersEntity());
+        //reservationToUpdate.setReservationUser(new ReservationsEntity());
 
         return new ReservationRestModel(reservationRepository.save(reservationToUpdate));
     }

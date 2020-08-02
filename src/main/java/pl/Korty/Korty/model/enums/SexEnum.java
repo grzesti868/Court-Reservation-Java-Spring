@@ -1,7 +1,7 @@
 package pl.Korty.Korty.model.enums;
 
 public enum SexEnum {
-    Male("M"), Female("M");
+    Male("M"), Female("F");
 
     private String code;
 

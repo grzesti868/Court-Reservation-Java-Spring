@@ -35,15 +35,20 @@ public class Squash_CourtsEntity {
         return fields_num;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setSquashCourtAddress(AddressesEntity squashCourtAddress) {
         this.squashCourtAddress = squashCourtAddress;
     }
 
     public void setFields_num(Integer fields_num) {
         this.fields_num = fields_num;
+    }
+
+    @Override
+    public String toString() {
+        return "Squash_CourtsEntity{" +
+                "id=" + id +
+                ", squashCourtAddress=" + squashCourtAddress +
+                ", fields_num=" + fields_num +
+                '}';
     }
 }
