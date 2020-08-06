@@ -26,12 +26,12 @@ public class ReservationsEntity {
     @Column
     private String additional_info;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_court",referencedColumnName = "id")
     private Squash_CourtsEntity reservationSquashCourt;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="id_user")
     private UsersEntity reservationUser;
 

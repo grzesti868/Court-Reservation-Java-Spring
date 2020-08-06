@@ -2,6 +2,7 @@ package pl.Korty.Korty.model.services;
 
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.model.entities.AddressesEntity;
+import pl.Korty.Korty.model.entities.ReservationsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.repositories.UserRepository;
@@ -44,9 +45,20 @@ public class UserService {
         userToUpdate.setPassword(user.getPassword());
         userToUpdate.setSex(user.getSex());
         userToUpdate.setStatus(user.getStatus());
-        //userToUpdate.setAddressesEntity(user.getAddressRestModel());
-        //userToUpdate.setReservationsEntity(user.getReservationsEntity());
 
+        AddressesEntity updateUserAddress = addressRepository.findById(userToUpdate.getAddressesEntity().getId()).get();
+        updateUserAddress.setStreet(user.getAddressRestModel().getStreet());
+        updateUserAddress.setBuilding_num(user.getAddressRestModel().getBuilding_num());
+        updateUserAddress.setApartment_num(user.getAddressRestModel().getApartment_num());
+        updateUserAddress.setCity(user.getAddressRestModel().getCity());
+        updateUserAddress.setPostal_code(user.getAddressRestModel().getPostal_code());
+        updateUserAddress.setCountry(user.getAddressRestModel().getCountry());
+
+
+        //List<ReservationsEntity> listOfReservations(user.getReservationRestModels().stream().map(ReservationsEntity::new).collect(Collectors.toList()));
+        //userToUpdate.setReservationsEntity();
+
+        addressRepository.save(updateUserAddress);
         return new UserRestModel(userRepository.save(userToUpdate));
     }
 

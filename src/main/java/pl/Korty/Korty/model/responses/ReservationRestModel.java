@@ -19,19 +19,22 @@ public class ReservationRestModel {
 
     private Integer people_num;
     private String additional_info;
-    private Squash_CourtsEntity squash_courtsEntity;
+    private Long courtId;
+
+    private String userLogin;
     private UserRestModel userRestModel;
 
 
     public ReservationRestModel() {
     }
 
-    public ReservationRestModel(Date start_date, Date end_date, Integer people_num, String additional_info, Squash_CourtsEntity squash_courtsEntity, UserRestModel userRestModel) {
+    public ReservationRestModel(Date start_date, Date end_date, Integer people_num, String additional_info, Long courtId,String userLogin, UserRestModel userRestModel) {
         this.start_date = start_date;
         this.end_date = end_date;
         this.people_num = people_num;
         this.additional_info = additional_info;
-        this.squash_courtsEntity = squash_courtsEntity;
+        this.courtId = courtId;
+        this.userLogin = userLogin;
         this.userRestModel = userRestModel;
     }
 
@@ -40,8 +43,8 @@ public class ReservationRestModel {
         this.end_date = entity.getEnd_date();
         this.people_num = entity.getPeople_num();
         this.additional_info = entity.getAdditional_info();
-        this.squash_courtsEntity = entity.getReservationSquashCourt();
-        this.userRestModel = new UserRestModel(entity.getReservationUser());
+        this.courtId = entity.getReservationSquashCourt().getId();
+        //this.userRestModel = new UserRestModel(entity.getReservationUser());
     }
 
     public Date getStart_date() {
@@ -60,8 +63,12 @@ public class ReservationRestModel {
         return additional_info;
     }
 
-    public Squash_CourtsEntity getSquash_courtsEntity() {
-        return squash_courtsEntity;
+    public Long getCourtId() {
+        return courtId;
+    }
+
+    public String getUserLogin() {
+        return userLogin;
     }
 
     public UserRestModel getUserRestModel() {
@@ -75,7 +82,8 @@ public class ReservationRestModel {
                 ", end_date=" + end_date +
                 ", people_num=" + people_num +
                 ", additional_info='" + additional_info + '\'' +
-                ", squash_courtsEntity=" + squash_courtsEntity +
+                ", courtId=" + courtId +
+                ", userLogin='" + userLogin + '\'' +
                 ", userRestModel=" + userRestModel +
                 '}';
     }

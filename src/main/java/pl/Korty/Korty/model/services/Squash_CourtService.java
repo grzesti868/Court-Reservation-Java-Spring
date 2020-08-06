@@ -40,17 +40,18 @@ public class Squash_CourtService {
 
         Squash_CourtsEntity courtToUpdate = squash_courtsRepository.findById(id).get();
 
-        AddressesEntity addressOfCourt = new AddressesEntity(
-                court.getAddressRestModel().getStreet(),
-                court.getAddressRestModel().getBuilding_num(),
-                court.getAddressRestModel().getApartment_num(),
-                court.getAddressRestModel().getCity(),
-                court.getAddressRestModel().getPostal_code(),
-                court.getAddressRestModel().getCountry());
-
-        courtToUpdate.setSquashCourtAddress(addressOfCourt);
         courtToUpdate.setFields_num(court.getFields_num());
 
+        AddressesEntity updateCourtAddress = addressRepository.findById(courtToUpdate.getSquashCourtAddress().getId()).get();
+        updateCourtAddress.setStreet(court.getAddressRestModel().getStreet());
+        updateCourtAddress.setBuilding_num(court.getAddressRestModel().getBuilding_num());
+        updateCourtAddress.setApartment_num(court.getAddressRestModel().getApartment_num());
+        updateCourtAddress.setCity(court.getAddressRestModel().getCity());
+        updateCourtAddress.setPostal_code(court.getAddressRestModel().getPostal_code());
+        updateCourtAddress.setCountry(court.getAddressRestModel().getCountry());
+
+
+        addressRepository.save(updateCourtAddress);
         return new Squash_CourtRestModel(squash_courtsRepository.save(courtToUpdate));
     }
 
@@ -67,18 +68,20 @@ public class Squash_CourtService {
         return squash_courtsRepository.findBySquashCourtAddressId(addressId);
     }
 
-    private Squash_CourtsEntity mapRestModel(final Squash_CourtRestModel court) {
-        Squash_CourtsEntity squash_courtToAdd = new Squash_CourtsEntity(court.getFields_num());
+    private Squash_CourtsEntity mapRestModel(final Squash_CourtRestModel model) {
+
+        Squash_CourtsEntity squash_courtToAdd = new Squash_CourtsEntity(model.getFields_num());
 
         AddressesEntity addressOfSquash_Court = new AddressesEntity(
-                court.getAddressRestModel().getStreet(),
-                court.getAddressRestModel().getBuilding_num(),
-                court.getAddressRestModel().getApartment_num(),
-                court.getAddressRestModel().getCity(),
-                court.getAddressRestModel().getPostal_code(),
-                court.getAddressRestModel().getCountry());
+                model.getAddressRestModel().getStreet(),
+                model.getAddressRestModel().getBuilding_num(),
+                model.getAddressRestModel().getApartment_num(),
+                model.getAddressRestModel().getCity(),
+                model.getAddressRestModel().getPostal_code(),
+                model.getAddressRestModel().getCountry());
 
         squash_courtToAdd.setSquashCourtAddress(addressOfSquash_Court);
+        System.out.println("BUM:"+squash_courtToAdd);
         return squash_courtToAdd;
     }
 

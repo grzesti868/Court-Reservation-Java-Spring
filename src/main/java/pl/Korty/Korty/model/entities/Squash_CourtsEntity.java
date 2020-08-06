@@ -9,7 +9,7 @@ public class Squash_CourtsEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-   @OneToOne
+   @OneToOne(cascade = CascadeType.ALL)
    @JoinColumn(name ="id_address",referencedColumnName = "id")
    private AddressesEntity squashCourtAddress;
 
