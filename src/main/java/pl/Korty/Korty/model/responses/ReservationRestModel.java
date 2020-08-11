@@ -8,6 +8,7 @@ import pl.Korty.Korty.model.entities.UsersEntity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 public class ReservationRestModel {
 
@@ -44,6 +45,7 @@ public class ReservationRestModel {
         this.people_num = entity.getPeople_num();
         this.additional_info = entity.getAdditional_info();
         this.courtId = entity.getReservationSquashCourt().getId();
+        this.userLogin = entity.getReservationUser().getLogin();
         //this.userRestModel = new UserRestModel(entity.getReservationUser());
     }
 
@@ -86,5 +88,23 @@ public class ReservationRestModel {
                 ", userLogin='" + userLogin + '\'' +
                 ", userRestModel=" + userRestModel +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReservationRestModel)) return false;
+        ReservationRestModel that = (ReservationRestModel) o;
+        return getStart_date().equals(that.getStart_date()) &&
+                getEnd_date().equals(that.getEnd_date()) &&
+                getPeople_num().equals(that.getPeople_num()) &&
+                Objects.equals(getAdditional_info(), that.getAdditional_info()) &&
+                getCourtId().equals(that.getCourtId()) &&
+                getUserLogin().equals(that.getUserLogin());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getStart_date(), getEnd_date(), getPeople_num(), getAdditional_info(), getCourtId(), getUserLogin());
     }
 }

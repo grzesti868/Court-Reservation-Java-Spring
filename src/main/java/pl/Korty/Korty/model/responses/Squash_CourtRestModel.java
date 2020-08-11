@@ -3,6 +3,8 @@ package pl.Korty.Korty.model.responses;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 
+import java.util.Objects;
+
 
 public class Squash_CourtRestModel {
 
@@ -37,5 +39,19 @@ public class Squash_CourtRestModel {
                 "addressRestModel=" + addressRestModel +
                 ", fields_num=" + fields_num +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Squash_CourtRestModel)) return false;
+        Squash_CourtRestModel that = (Squash_CourtRestModel) o;
+        return getAddressRestModel().equals(that.getAddressRestModel()) &&
+                getFields_num().equals(that.getFields_num());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getAddressRestModel(), getFields_num());
     }
 }

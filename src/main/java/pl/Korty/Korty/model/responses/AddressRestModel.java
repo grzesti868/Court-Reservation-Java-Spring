@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 public class AddressRestModel {
 
@@ -72,5 +73,23 @@ public class AddressRestModel {
                 ", postal_code='" + postal_code + '\'' +
                 ", country='" + country + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AddressRestModel)) return false;
+        AddressRestModel that = (AddressRestModel) o;
+        return Objects.equals(getStreet(), that.getStreet()) &&
+                Objects.equals(getBuilding_num(), that.getBuilding_num()) &&
+                Objects.equals(getApartment_num(), that.getApartment_num()) &&
+                Objects.equals(getCity(), that.getCity()) &&
+                Objects.equals(getPostal_code(), that.getPostal_code()) &&
+                Objects.equals(getCountry(), that.getCountry());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getStreet(), getBuilding_num(), getApartment_num(), getCity(), getPostal_code(), getCountry());
     }
 }

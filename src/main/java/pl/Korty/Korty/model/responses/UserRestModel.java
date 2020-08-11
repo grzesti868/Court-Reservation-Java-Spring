@@ -8,6 +8,7 @@ import pl.Korty.Korty.model.enums.StatusEnum;
 
 import javax.persistence.Column;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class UserRestModel {
@@ -46,7 +47,7 @@ public class UserRestModel {
         this.sex = entity.getSex();
         this.status = entity.getStatus();
         this.addressRestModel = new AddressRestModel(entity.getAddressesEntity());
-        this.reservationRestModels = entity.getReservationsEntity().stream().map(ReservationRestModel::new).collect(Collectors.toList());
+        if(entity.getReservationsEntity() != null )this.reservationRestModels = entity.getReservationsEntity().stream().map(ReservationRestModel::new).collect(Collectors.toList());
     }
 
     public String getLogin() {
@@ -98,5 +99,25 @@ public class UserRestModel {
                 ", addressRestModel=" + addressRestModel +
                 ", reservationRestModels=" + reservationRestModels +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserRestModel)) return false;
+        UserRestModel that = (UserRestModel) o;
+        return getLogin().equals(that.getLogin()) &&
+                getPassword().equals(that.getPassword()) &&
+                getEmail().equals(that.getEmail()) &&
+                getFirstname().equals(that.getFirstname()) &&
+                getLastname().equals(that.getLastname()) &&
+                getSex() == that.getSex() &&
+                getStatus() == that.getStatus() &&
+                Objects.equals(getAddressRestModel(), that.getAddressRestModel());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLogin(), getPassword(), getEmail(), getFirstname(), getLastname(), getSex(), getStatus(), getAddressRestModel());
     }
 }

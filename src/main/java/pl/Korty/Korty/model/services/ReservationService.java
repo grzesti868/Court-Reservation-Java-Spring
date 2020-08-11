@@ -1,19 +1,17 @@
 package pl.Korty.Korty.model.services;
 
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
-import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.ReservationRepository;
 import pl.Korty.Korty.model.repositories.Squash_CourtsRepository;
 import pl.Korty.Korty.model.repositories.UserRepository;
 import pl.Korty.Korty.model.responses.ReservationRestModel;
-import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
 import pl.Korty.Korty.model.responses.UserRestModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,10 +49,7 @@ public class ReservationService {
     }
 
     public Long add(final ReservationRestModel reservationRestModel) {
-
-        Long id = reservationRepository.save(mapReservationRestModel(reservationRestModel)).getId();
-        System.out.println(reservationRepository.findAll().toString());
-        return id;
+        return reservationRepository.save(mapReservationRestModel(reservationRestModel)).getId();
     }
 
     public ReservationRestModel update(final Long id, ReservationRestModel reservation)
@@ -96,33 +91,36 @@ public class ReservationService {
         System.out.println("MODEL REZERWACJI:"+ model.toString());
 
         ReservationsEntity reservationsEntity = new ReservationsEntity(model.getStart_date(),model.getEnd_date(),model.getPeople_num(), model.getAdditional_info());
-        /*Squash_CourtsEntity squash_courtsEntity = new Squash_CourtsEntity(model.getSquash_courtRestModel().getFields_num());
-        UsersEntity usersEntity = new UsersEntity(
-                model.getUserRestModel().getLogin(),
-                model.getUserRestModel().getPassword(),
-                model.getUserRestModel().getEmail(),
-                model.getUserRestModel().getFirstname(),
-                model.getUserRestModel().getLastname(),
-                model.getUserRestModel().getSex(),
-                model.getUserRestModel().getStatus());
-
-        reservationsEntity.setReservationSquashCourt(squash_courtsEntity);
-        reservationsEntity.setReservationUser(usersEntity);*/
 
         reservationsEntity.setReservationSquashCourt(squash_courtsRepository.findById(model.getCourtId()).get());
 
         System.out.println("BAZOWA ENCJA:"+reservationsEntity.toString());
 
-        if(model.getUserLogin()==null){
+        Optional<String> reservationUser = Optional.ofNullable(model.getUserLogin());
+
+        if(reservationUser.isEmpty()) {
+            UsersEntity newUser = mapUserRestModel(model.getUserRestModel());
+            System.out.println("NOWY USER:"+newUser.toString());
+            reservationsEntity.setReservationUser(newUser);
+        } else {
+
+            UsersEntity oldUser = userRepository.findByLogin(model.getUserLogin());
+            System.out.println("OLD USER:"+oldUser.toString());
+            reservationsEntity.setReservationUser(oldUser);
+        }
+
+        /*if(model.getUserLogin()==null){
             UsersEntity newUser = mapUserRestModel(model.getUserRestModel());
             System.out.println("NOWY USER:"+newUser.toString());
             reservationsEntity.setReservationUser(newUser);
         }
         else{
+
             UsersEntity oldUser = userRepository.findByLogin(model.getUserLogin());
             System.out.println("OLD USER:"+oldUser.toString());
             reservationsEntity.setReservationUser(oldUser);
-        }
+        }*/
+
         System.out.println(reservationsEntity.toString());
         return reservationsEntity;
     }
