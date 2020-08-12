@@ -14,10 +14,8 @@ import pl.Korty.Korty.model.responses.UserRestModel;
 import pl.Korty.Korty.model.services.UserService;
 
 import javax.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,16 +35,6 @@ public class UserServiceTest {
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
-    }
-
-    @Test
-    void addPureNewUser_addUserWithoutAddressAndReservations_RefuseToAddUserWithoutAddress() {
-        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, null,null);
-
-        assertEquals(0, userRepository.count());
-        userService.add(user);
-
-        assertEquals(0, userRepository.count());
     }
 
     @Test
@@ -124,4 +112,61 @@ public class UserServiceTest {
         assertEquals(updateUser,userService.getByLogin(updateUser.getLogin()));
     }
 
+    @Test
+    void addUser_addEmptyUser_refuseToAdd() {
+
+        final UserRestModel user = null;
+        assertEquals(0, userRepository.count());
+        Long id = userService.add(user);
+        assertEquals(-1, id);
+    }
+
+    @Test
+    void addUser_addUSerWithoutAddress_refuseToAddUser() {
+        final AddressRestModel address = null;
+        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
+        Long id = userService.add(user);
+        assertEquals(0, userRepository.count());
+        assertEquals(0,addressRepository.count());
+        assertEquals(-1,id);
+    }
+
+    @Test
+    void updateUser_setInvalidIdAndCorrectUser_returnNull() {
+        final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
+        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
+        Long id = userService.add(user);
+        assertEquals(1, userRepository.count());
+
+        final AddressRestModel updateAddress = new AddressRestModel("UPDATEnameStreet",1,2,"UPDATEnameCity","44-100","nameCountry");
+        final UserRestModel updateUser = new UserRestModel("UPDATEgregvader","admin123","UPDATEgregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, updateAddress,null);
+
+
+        assertEquals(null, userService.update(id+1,updateUser));
+
+    }
+    @Test
+    void updateUser_setValidIdZndIncorrectUser_returnNull() {
+        final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
+        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
+        Long id = userService.add(user);
+        assertEquals(1, userRepository.count());
+
+        final UserRestModel updateUser = null;
+
+
+        assertEquals(null, userService.update(id,updateUser));
+    }
+
+    @Test
+    void deleteUser_cantFindValidUser_RefuseToDelete() {
+        assertEquals(false,userService.deleteByID(8));
+    }
+
+    @Test
+    void findUserById_cantFindValidUser_returnNull() {
+
+        assertEquals(null,userService.getByLogin("someLogin"));
+
+    }
 }

@@ -9,5 +9,4 @@ public class KortyApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(KortyApplication.class, args);
 	}
-
 }

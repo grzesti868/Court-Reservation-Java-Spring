@@ -1,14 +1,13 @@
 package pl.Korty.Korty.model.responses;
 
-import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
 
-import javax.persistence.Column;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UserRestModel {
@@ -39,7 +38,8 @@ public class UserRestModel {
     }
 
     public UserRestModel(final UsersEntity entity) {
-        this.login = entity.getLogin();
+        Optional<List<ReservationsEntity>> hasReservations = Optional.ofNullable(entity.getReservationsEntity());
+         this.login = entity.getLogin();
         this.password = entity.getPassword();
         this.email = entity.getEmail();
         this.firstname = entity.getFirstname();
@@ -47,7 +47,7 @@ public class UserRestModel {
         this.sex = entity.getSex();
         this.status = entity.getStatus();
         this.addressRestModel = new AddressRestModel(entity.getAddressesEntity());
-        if(entity.getReservationsEntity() != null )this.reservationRestModels = entity.getReservationsEntity().stream().map(ReservationRestModel::new).collect(Collectors.toList());
+        if(hasReservations.isPresent()) { this.reservationRestModels = entity.getReservationsEntity().stream().map(ReservationRestModel::new).collect(Collectors.toList()); }
     }
 
     public String getLogin() {
