@@ -1,12 +1,9 @@
 package pl.Korty.Korty.model.services;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.model.entities.AddressesEntity;
-import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
-import pl.Korty.Korty.model.responses.UserRestModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +36,8 @@ public class AddressService {
 
         Optional<AddressRestModel> updateAddress = Optional.ofNullable(address);
 
-        if(updateAddress.isPresent() && id > 0){
-            Optional<AddressesEntity> addressToUpdate = Optional.ofNullable(addressRepository.findById(id).orElse(null));
+        if(updateAddress.isPresent() && addressRepository.existsById(id)){
+            Optional<AddressesEntity> addressToUpdate = addressRepository.findById(id);
             if(addressToUpdate.isPresent()){
                 addressToUpdate.get().setStreet(updateAddress.get().getStreet());
                 addressToUpdate.get().setApartment_num(updateAddress.get().getApartment_num());
@@ -58,14 +55,12 @@ public class AddressService {
     }
 
     public Boolean deleteByID(final long id){
-        try{
+        if(addressRepository.existsById(id)){
             addressRepository.deleteById(id);
             return Boolean.TRUE;
         }
-        catch (EmptyResultDataAccessException e)
-        {
+        else
             return Boolean.FALSE;
-        }
 
     }
 

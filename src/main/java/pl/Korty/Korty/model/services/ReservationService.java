@@ -37,57 +37,62 @@ public class ReservationService {
     }
 
     public List<ReservationRestModel> getAllByUserId(final Long id){
+        if(userRepository.existsById(id))
         return reservationRepository.findAllByReservationUserId(id).stream()
                 .map(ReservationRestModel::new)
                 .collect(Collectors.toList());
+        else
+            return null;
     }
 
     public List<ReservationRestModel> getAllByCourtId(final Long id){
+        if(squash_courtsRepository.existsById(id))
         return reservationRepository.findAllByReservationSquashCourtId(id).stream()
                 .map(ReservationRestModel::new)
                 .collect(Collectors.toList());
+        else
+            return null;
     }
 
-    public Long add(final ReservationRestModel reservationRestModel) {
+    public Long add(final ReservationRestModel reservationRestModel) {//TODO: fix this
         return reservationRepository.save(mapReservationRestModel(reservationRestModel)).getId();
     }
 
-    public ReservationRestModel update(final Long id, ReservationRestModel reservation)
+    public ReservationRestModel update(final Long id, ReservationRestModel reservation) //TODO: check of reservation is correct
     {
-        ReservationsEntity reservationToUpdate = reservationRepository.findById(id).get();
+        Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(reservation);
+        if(reservationRepository.existsById(id) && reservationRestModel.isPresent()){
+            Optional <ReservationsEntity> reservationToUpdate = reservationRepository.findById(id);
 
-        reservationToUpdate.setStart_date(reservation.getStart_date());
-        reservationToUpdate.setEnd_date(reservation.getEnd_date());
-        reservationToUpdate.setPeople_num(reservation.getPeople_num());
-        reservationToUpdate.setAdditional_info(reservation.getAdditional_info());
+            reservationToUpdate.get().setStart_date(reservationRestModel.get().getStart_date());
+            reservationToUpdate.get().setEnd_date(reservationRestModel.get().getEnd_date());
+            reservationToUpdate.get().setPeople_num(reservationRestModel.get().getPeople_num());
+            reservationToUpdate.get().setAdditional_info(reservationRestModel.get().getAdditional_info());
 
 
-        return new ReservationRestModel(reservationRepository.save(reservationToUpdate));
+            return new ReservationRestModel(reservationRepository.save(reservationToUpdate.get()));
+        }
+        else
+            return null;
     }
 
-    public void deleteByID(final long id){
-        reservationRepository.deleteById(id);
+    public Boolean deleteByID(final long id){
+        if(reservationRepository.existsById(id)) {
+            reservationRepository.deleteById(id);
+            return Boolean.TRUE;
+        }
+        else
+            return  Boolean.FALSE;
     }
 
     public ReservationRestModel getById(final Long id) {
+        if(reservationRepository.existsById(id))
         return new ReservationRestModel(reservationRepository.getOne(id));
+        else
+            return null;
     }
 
-    public List<ReservationRestModel> getByReservationUserId(final Long userId){
-        return reservationRepository.findAllByReservationUserId(userId).stream()
-                .map(ReservationRestModel::new)
-                .collect(Collectors.toList());
-    }
-
-    public List<ReservationRestModel> getByReservationSquashCourtId(final Long courtId){
-        return reservationRepository.findAllByReservationSquashCourtId(courtId).stream()
-                .map(ReservationRestModel::new)
-                .collect(Collectors.toList());
-    }
-
-
-
-    private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) {
+    private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) { //TODO: fix this, zakladam ze wszyskto jest ok, logika w "add"
         System.out.println("MODEL REZERWACJI:"+ model.toString());
 
         ReservationsEntity reservationsEntity = new ReservationsEntity(model.getStart_date(),model.getEnd_date(),model.getPeople_num(), model.getAdditional_info());
@@ -109,22 +114,12 @@ public class ReservationService {
             reservationsEntity.setReservationUser(oldUser);
         }
 
-        /*if(model.getUserLogin()==null){
-            UsersEntity newUser = mapUserRestModel(model.getUserRestModel());
-            System.out.println("NOWY USER:"+newUser.toString());
-            reservationsEntity.setReservationUser(newUser);
-        }
-        else{
-
-            UsersEntity oldUser = userRepository.findByLogin(model.getUserLogin());
-            System.out.println("OLD USER:"+oldUser.toString());
-            reservationsEntity.setReservationUser(oldUser);
-        }*/
 
         System.out.println(reservationsEntity.toString());
         return reservationsEntity;
     }
-    private UsersEntity mapUserRestModel(final UserRestModel model){
+
+    private UsersEntity mapUserRestModel(final UserRestModel model){ //TODO: get rid of this?
         UsersEntity userToAdd = new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
         AddressesEntity addressOfUser = new AddressesEntity(
                 model.getAddressRestModel().getStreet(),

@@ -1,6 +1,5 @@
 package pl.Korty.Korty.model.services;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
@@ -33,28 +32,32 @@ public class UserService {
 
     public Long add(final UserRestModel user) {
         Optional<UserRestModel> newUser = Optional.ofNullable(user);
-
         if(newUser.isPresent()){
-            Optional<AddressRestModel> hasAddress = Optional.ofNullable(newUser.get().getAddressRestModel());
-            if(hasAddress.isPresent())
-            return userRepository.save(mapRestModel(user)).getId();
+            if(!userRepository.existsByLogin(newUser.get().getLogin()))
+            {
+                Optional<AddressRestModel> hasAddress = Optional.ofNullable(newUser.get().getAddressRestModel());
+                if(hasAddress.isPresent())
+                    return userRepository.save(mapRestModel(user)).getId();
+                else
+                    return -1L;
+            }
             else
-                return Long.valueOf(-1);
+                return -2L;
         }
         else
-            return Long.valueOf(-1);
+            return -3L;
     }
 
     public UserRestModel update(final Long id, final UserRestModel user) {
 
         Optional<UserRestModel> updateUser = Optional.ofNullable(user);
-        System.out.println("JEBŁO");
 
-        if(updateUser.isPresent() && id>0)
+        if(updateUser.isPresent() && userRepository.existsById(id))
         {
-            Optional<UsersEntity> userToUpdate =Optional.ofNullable(userRepository.findById(id).orElse(null));
+            Optional<UsersEntity> userToUpdate =userRepository.findById(id);
             if(userToUpdate.isPresent())
             {
+
                 userToUpdate.get().setEmail(updateUser.get().getEmail());
                 userToUpdate.get().setFirstname(updateUser.get().getFirstname());
                 userToUpdate.get().setLastname(updateUser.get().getLastname());
@@ -63,17 +66,23 @@ public class UserService {
                 userToUpdate.get().setSex(updateUser.get().getSex());
                 userToUpdate.get().setStatus(updateUser.get().getStatus());
 
-                AddressesEntity updateUserAddress = userToUpdate.get().getAddressesEntity();
+                Optional<AddressRestModel> updateAddress = Optional.ofNullable(updateUser.get().getAddressRestModel());
+                AddressesEntity updateUserAddress;
+                if(updateAddress.isPresent())
+                {
+                    updateUserAddress = userToUpdate.get().getAddressesEntity();
+                    updateUserAddress.setStreet(updateAddress.get().getStreet());
+                    updateUserAddress.setBuilding_num(updateAddress.get().getBuilding_num());
+                    updateUserAddress.setApartment_num(updateAddress.get().getApartment_num());
+                    updateUserAddress.setCity(updateAddress.get().getCity());
+                    updateUserAddress.setPostal_code(updateAddress.get().getPostal_code());
+                    updateUserAddress.setCountry(updateAddress.get().getCountry());
+                }
+                else
+                {
+                    updateUserAddress = userToUpdate.get().getAddressesEntity();
+                }
 
-                updateUserAddress.setStreet(updateUser.get().getAddressRestModel().getStreet());
-                updateUserAddress.setBuilding_num(updateUser.get().getAddressRestModel().getBuilding_num());
-                updateUserAddress.setApartment_num(updateUser.get().getAddressRestModel().getApartment_num());
-                updateUserAddress.setCity(updateUser.get().getAddressRestModel().getCity());
-                updateUserAddress.setPostal_code(updateUser.get().getAddressRestModel().getPostal_code());
-                updateUserAddress.setCountry(updateUser.get().getAddressRestModel().getCountry());
-
-
-                addressRepository.save(updateUserAddress);
                 return new UserRestModel(userRepository.save(userToUpdate.get()));
 
             } else
@@ -85,14 +94,12 @@ public class UserService {
     }
 
     public Boolean deleteByID(final long id){
-        try{
-            userRepository.deleteById(id);;
+        if(userRepository.existsById(id)){
+            userRepository.deleteById(id);
             return Boolean.TRUE;
         }
-        catch (EmptyResultDataAccessException e)
-        {
+        else
             return Boolean.FALSE;
-        }
     }
 
     public UserRestModel getByLogin(final String login) {

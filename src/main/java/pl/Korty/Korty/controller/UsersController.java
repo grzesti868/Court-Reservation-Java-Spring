@@ -42,8 +42,12 @@ public class UsersController {
         Long id = userService.add(user);
         if(id>0)
             return ResponseEntity.ok("User has been added, ID: " + id);
+        else if(id.equals(-1L))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad user's data (user's address is empty.");
+        else if(id.equals(-2L))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User's login already exists.");
         else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad user's data.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User's data is empty");
     }
 
     @PutMapping("{id}")

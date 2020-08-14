@@ -118,7 +118,7 @@ public class UserServiceTest {
         final UserRestModel user = null;
         assertEquals(0, userRepository.count());
         Long id = userService.add(user);
-        assertEquals(-1, id);
+        assertEquals(-3, id);
     }
 
     @Test
@@ -167,6 +167,20 @@ public class UserServiceTest {
     void findUserById_cantFindValidUser_returnNull() {
 
         assertEquals(null,userService.getByLogin("someLogin"));
+
+    }
+
+    @Test
+    void addUser_addUserWhileLoginExists_refuseToAdd() {
+        final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
+        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
+        Long id = userService.add(user);
+        assertEquals(1, userRepository.count());
+        final AddressRestModel newAddress = new AddressRestModel("asdasdaa",1,2,"nameCity","44-100","nameCountry");
+        final UserRestModel newUser = new UserRestModel("gregvader","asdasda","asdasdasd@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
+
+        assertEquals(-2L, userService.add(newUser));
+        assertEquals(1, userRepository.count());
 
     }
 }

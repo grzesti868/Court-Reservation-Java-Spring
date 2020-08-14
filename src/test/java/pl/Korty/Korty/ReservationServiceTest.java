@@ -5,8 +5,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
 import pl.Korty.Korty.model.repositories.AddressRepository;
@@ -25,12 +25,10 @@ import javax.transaction.Transactional;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @SpringBootTest
@@ -62,7 +60,12 @@ public class ReservationServiceTest {
     @AfterEach
     void tearDown() {
         reservationRepository.deleteAll();
+        userRepository.deleteAll();
+        squash_courtsRepository.deleteAll();
     }
+
+    @MockBean
+    private ReservationRestModel reservationRestModelMock;
 
     @Test
     @Transactional
@@ -180,5 +183,30 @@ public class ReservationServiceTest {
 
         reservationService.update(reservationId,updateReservation);
         assertEquals(updateReservation,reservationService.getById(reservationId));
+    }
+
+    @Test
+    void findAllUserReservation_findReservationsByInvalidCourtId_returnNull() {
+        assertNull(reservationService.getAllByCourtId(1L));
+    }
+
+    @Test
+    void findAllCourtReservation_findCourtsByInvalidUsersId_returnNull() {
+        assertNull(reservationService.getAllByUserId(1L));
+    }
+
+    @Test
+    void updateReservation_updateReservationByInvalidId_returnNull() {
+        assertNull(reservationService.update(2L,reservationRestModelMock));
+    }
+
+    @Test
+    void deleteUser_deleteUserByInvalidId_returnFalse() {
+        assertEquals(false,reservationService.deleteByID(1L));
+    }
+
+    @Test
+    void getReservationById_getReservationByInvalidId_returnNull() {
+        assertNull(reservationService.getById(2L));
     }
 }
