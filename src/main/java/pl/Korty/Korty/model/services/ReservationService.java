@@ -7,9 +7,11 @@ import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.ReservationRepository;
 import pl.Korty.Korty.model.repositories.Squash_CourtsRepository;
 import pl.Korty.Korty.model.repositories.UserRepository;
+import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.responses.ReservationRestModel;
 import pl.Korty.Korty.model.responses.UserRestModel;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,18 +56,41 @@ public class ReservationService {
             return null;
     }
 
-    public Long add(final ReservationRestModel reservationRestModel) {//TODO: fix this
-        return reservationRepository.save(mapReservationRestModel(reservationRestModel)).getId();
+    public Long add(final ReservationRestModel reservationRestModel) { //todo: check when adding on EXISTING user
+        Optional<ReservationRestModel> reservationToAdd = Optional.ofNullable(reservationRestModel);
+        if(reservationToAdd.isEmpty()) {
+            return -1L; //rezerwacja jest pusta
+        } else {
+            if(!squash_courtsRepository.existsById(reservationToAdd.get().getCourtId())) {
+                return -2L; //nie ma id courtu
+            } else {
+                Optional<UserRestModel> reservationUser = Optional.ofNullable(reservationToAdd.get().getUserRestModel());
+                Optional<String> userLogin = Optional.ofNullable(reservationToAdd.get().getUserLogin());
+                if(reservationUser.isEmpty() && userLogin.isEmpty()){
+                    return -3L; //nie ma ani nowego usera ani id starego
+                } else {
+                    Optional<ReservationsEntity> mappedReservation = Optional.ofNullable(mapReservationRestModel(reservationToAdd.get()));
+                    if(mappedReservation.isEmpty()){
+                        return -4L; //zle dane usera lub nie mozna zarezerwowac kortu w tym przedziale czasowym
+                    } else {
+                        return reservationRepository.save(mappedReservation.get()).getId();
+                    }
+                }
+            }
+        }
     }
 
-    public ReservationRestModel update(final Long id, ReservationRestModel reservation) //TODO: check of reservation is correct
+    public ReservationRestModel update(final Long id, ReservationRestModel reservation) //TODO: check if reservation is correct
     {
         Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(reservation);
         if(reservationRepository.existsById(id) && reservationRestModel.isPresent()){
             Optional <ReservationsEntity> reservationToUpdate = reservationRepository.findById(id);
 
-            reservationToUpdate.get().setStart_date(reservationRestModel.get().getStart_date());
-            reservationToUpdate.get().setEnd_date(reservationRestModel.get().getEnd_date());
+            if(isTimeValid(reservation.getStart_date(),reservation.getEnd_date(),reservation.getCourtId()))
+            {
+                reservationToUpdate.get().setStart_date(reservationRestModel.get().getStart_date());
+                reservationToUpdate.get().setEnd_date(reservationRestModel.get().getEnd_date());
+            }
             reservationToUpdate.get().setPeople_num(reservationRestModel.get().getPeople_num());
             reservationToUpdate.get().setAdditional_info(reservationRestModel.get().getAdditional_info());
 
@@ -92,8 +117,11 @@ public class ReservationService {
             return null;
     }
 
-    private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) { //TODO: fix this, zakladam ze wszyskto jest ok, logika w "add"
+    private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) {
         System.out.println("MODEL REZERWACJI:"+ model.toString());
+
+        if(!isTimeValid(model.getStart_date(),model.getEnd_date(),model.getCourtId()))
+            return null;//nie mozna zarezerwowac w tym przedziale czasowym
 
         ReservationsEntity reservationsEntity = new ReservationsEntity(model.getStart_date(),model.getEnd_date(),model.getPeople_num(), model.getAdditional_info());
 
@@ -102,16 +130,25 @@ public class ReservationService {
         System.out.println("BAZOWA ENCJA:"+reservationsEntity.toString());
 
         Optional<String> reservationUser = Optional.ofNullable(model.getUserLogin());
-
         if(reservationUser.isEmpty()) {
+            Optional<AddressRestModel> userAddress = Optional.ofNullable(model.getUserRestModel().getAddressRestModel());
             UsersEntity newUser = mapUserRestModel(model.getUserRestModel());
+            if(userAddress.isEmpty()){
+                return null; //nie ma id adresu
+            }
+            if(userRepository.existsByLogin(newUser.getLogin())){
+                return null; //jest juz user o takim loginie
+            }
             System.out.println("NOWY USER:"+newUser.toString());
             reservationsEntity.setReservationUser(newUser);
         } else {
 
-            UsersEntity oldUser = userRepository.findByLogin(model.getUserLogin());
+            Optional<UsersEntity> oldUser = Optional.ofNullable(userRepository.findByLogin(model.getUserLogin()));
             System.out.println("OLD USER:"+oldUser.toString());
-            reservationsEntity.setReservationUser(oldUser);
+            if(oldUser.isEmpty()){
+                return null; //nie ma takiego usera
+            }
+            reservationsEntity.setReservationUser(oldUser.get());
         }
 
 
@@ -119,7 +156,7 @@ public class ReservationService {
         return reservationsEntity;
     }
 
-    private UsersEntity mapUserRestModel(final UserRestModel model){ //TODO: get rid of this?
+    private UsersEntity mapUserRestModel(final UserRestModel model){
         UsersEntity userToAdd = new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
         AddressesEntity addressOfUser = new AddressesEntity(
                 model.getAddressRestModel().getStreet(),
@@ -133,4 +170,19 @@ public class ReservationService {
         return userToAdd;
     }
 
+    public Boolean isTimeValid(Date start, Date end, Long idCourt) { //TODO: change to private after all is ok and delete test
+
+
+
+        List<ReservationsEntity> reservations = reservationRepository.findAllByReservationSquashCourtId(idCourt).stream()
+                .filter(r -> start.before(r.getEnd_date()) && r.getStart_date().before(end))
+                .collect(Collectors.toList());
+
+        if(reservations.size()< squash_courtsRepository.findById(idCourt).get().getFields_num()){
+            return Boolean.TRUE;
+        }else {
+            return Boolean.FALSE;
+        }
+
+    }
 }

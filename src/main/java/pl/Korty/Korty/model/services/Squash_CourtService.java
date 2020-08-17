@@ -4,13 +4,9 @@ package pl.Korty.Korty.model.services;
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
-import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.repositories.Squash_CourtsRepository;
-import pl.Korty.Korty.model.responses.AddressRestModel;
-import pl.Korty.Korty.model.responses.ReservationRestModel;
 import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
-import pl.Korty.Korty.model.responses.UserRestModel;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,7 +77,6 @@ public class Squash_CourtService {
                 model.getAddressRestModel().getCountry());
 
         squash_courtToAdd.setSquashCourtAddress(addressOfSquash_Court);
-        System.out.println("BUM:"+squash_courtToAdd);
         return squash_courtToAdd;
     }
 
