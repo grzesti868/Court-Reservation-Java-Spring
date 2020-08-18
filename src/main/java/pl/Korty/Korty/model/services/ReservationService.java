@@ -56,22 +56,22 @@ public class ReservationService {
             return null;
     }
 
-    public Long add(final ReservationRestModel reservationRestModel) { //todo: check when adding on EXISTING user
+    public Long add(final ReservationRestModel reservationRestModel) {
         Optional<ReservationRestModel> reservationToAdd = Optional.ofNullable(reservationRestModel);
         if(reservationToAdd.isEmpty()) {
-            return -1L; //rezerwacja jest pusta
+            return -1L; //reservation is empty
         } else {
             if(!squash_courtsRepository.existsById(reservationToAdd.get().getCourtId())) {
-                return -2L; //nie ma id courtu
+                return -2L; //no id court
             } else {
                 Optional<UserRestModel> reservationUser = Optional.ofNullable(reservationToAdd.get().getUserRestModel());
                 Optional<String> userLogin = Optional.ofNullable(reservationToAdd.get().getUserLogin());
                 if(reservationUser.isEmpty() && userLogin.isEmpty()){
-                    return -3L; //nie ma ani nowego usera ani id starego
+                    return -3L; //no new or old user found
                 } else {
                     Optional<ReservationsEntity> mappedReservation = Optional.ofNullable(mapReservationRestModel(reservationToAdd.get()));
                     if(mappedReservation.isEmpty()){
-                        return -4L; //zle dane usera lub nie mozna zarezerwowac kortu w tym przedziale czasowym
+                        return -4L; //wrong users info or invalid period of time
                     } else {
                         return reservationRepository.save(mappedReservation.get()).getId();
                     }
@@ -118,41 +118,38 @@ public class ReservationService {
     }
 
     private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) {
-        System.out.println("MODEL REZERWACJI:"+ model.toString());
+        //System.out.println("MODEL REZERWACJI:"+ model.toString());
 
         if(!isTimeValid(model.getStart_date(),model.getEnd_date(),model.getCourtId()))
-            return null;//nie mozna zarezerwowac w tym przedziale czasowym
+            return null;//can't book in this period of time
 
         ReservationsEntity reservationsEntity = new ReservationsEntity(model.getStart_date(),model.getEnd_date(),model.getPeople_num(), model.getAdditional_info());
 
         reservationsEntity.setReservationSquashCourt(squash_courtsRepository.findById(model.getCourtId()).get());
 
-        System.out.println("BAZOWA ENCJA:"+reservationsEntity.toString());
+        //System.out.println("BAZOWA ENCJA:"+reservationsEntity.toString());
 
         Optional<String> reservationUser = Optional.ofNullable(model.getUserLogin());
         if(reservationUser.isEmpty()) {
             Optional<AddressRestModel> userAddress = Optional.ofNullable(model.getUserRestModel().getAddressRestModel());
             UsersEntity newUser = mapUserRestModel(model.getUserRestModel());
             if(userAddress.isEmpty()){
-                return null; //nie ma id adresu
+
+                return null; //no address id
             }
             if(userRepository.existsByLogin(newUser.getLogin())){
-                return null; //jest juz user o takim loginie
+                return null; //login is already existing in db
             }
-            System.out.println("NOWY USER:"+newUser.toString());
+            //System.out.println("NOWY USER:"+newUser.toString());
             reservationsEntity.setReservationUser(newUser);
         } else {
-
-            Optional<UsersEntity> oldUser = Optional.ofNullable(userRepository.findByLogin(model.getUserLogin()));
-            System.out.println("OLD USER:"+oldUser.toString());
+            Optional<UsersEntity> oldUser = Optional.ofNullable(userRepository.findByLogin(reservationUser.get()));
             if(oldUser.isEmpty()){
-                return null; //nie ma takiego usera
+                return null; //no user find
             }
             reservationsEntity.setReservationUser(oldUser.get());
         }
 
-
-        System.out.println(reservationsEntity.toString());
         return reservationsEntity;
     }
 

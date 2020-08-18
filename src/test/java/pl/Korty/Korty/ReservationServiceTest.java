@@ -312,4 +312,40 @@ public class ReservationServiceTest {
         Date endDate1 = format.parse(stringEndDate1);
         assertEquals(Boolean.TRUE,reservationService.isTimeValid(startDate1,endDate1,courtId));
     }
+
+
+    @Test
+    @Transactional
+    void addAnotherReservation_addReservationOnNewUserAndThenAddReservationOnOldUser_successfulAdd() throws ParseException {
+        final AddressRestModel courtAddress = new AddressRestModel("COURTnameStreet",1,2,"COURTnameCity","44-100","nameCountry");
+        final Squash_CourtRestModel court = new Squash_CourtRestModel(courtAddress,5);
+        Long courtId = squash_courtService.add(court);
+        assertEquals(1,squash_courtsRepository.count());
+
+        final AddressRestModel userAddress = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
+        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, userAddress,null);
+
+        String stringStartDate = "2020-09-20 10:30:00";
+        String stringEndDate = "2020-09-20 12:30:00";
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDate = format.parse(stringStartDate);
+        Date endDate = format.parse(stringEndDate);
+        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,null,user);
+
+        reservationService.add(reservation);
+        assertEquals(1,reservationRepository.count());
+        assertEquals(2,addressRepository.count());
+        assertEquals(1,userRepository.count());
+
+        String stringStartDate1 = "2020-10-20 10:30:00";
+        String stringEndDate1 = "2020-10-20 12:30:00";
+        DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDate1 = format.parse(stringStartDate);
+        Date endDate1 = format.parse(stringEndDate);
+        final ReservationRestModel reservation1 = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
+        reservationService.add(reservation1);
+
+        assertEquals(2, reservationRepository.count());
+
+    }
 }
