@@ -1,9 +1,8 @@
 package pl.Korty.Korty.model.entities;
 
 
-import pl.Korty.Korty.model.enums.StatusEnum;
 import pl.Korty.Korty.model.enums.SexEnum;
-import pl.Korty.Korty.model.responses.UserRestModel;
+import pl.Korty.Korty.model.enums.StatusEnum;
 
 import javax.persistence.*;
 import java.util.List;
@@ -16,25 +15,25 @@ public class UsersEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String login;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String firstname;
 
-    @Column
+    @Column(nullable = false)
     private String lastname;
 
-    @Column
+    @Column(nullable = false)
     private SexEnum sex;
 
-    @Column
+    @Column(nullable = false)
     private StatusEnum status;
 
     @OneToOne(targetEntity = AddressesEntity.class,cascade = CascadeType.ALL)

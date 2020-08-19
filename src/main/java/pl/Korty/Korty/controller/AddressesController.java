@@ -2,14 +2,11 @@ package pl.Korty.Korty.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
-import pl.Korty.Korty.model.responses.UserRestModel;
 import pl.Korty.Korty.model.services.AddressService;
 
-import javax.persistence.Id;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +23,7 @@ public class AddressesController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<AddressRestModel>> listAllAddresses(){
         final List<AddressRestModel> addressesList = addressService.getAll();
 
@@ -33,6 +31,7 @@ public class AddressesController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('address:read')") //todo: guest can only his id
     public ResponseEntity<AddressRestModel> getAddressById(@PathVariable final Long id){
         Optional<AddressRestModel> address = Optional.ofNullable(addressService.getById(id));
         if(address.isPresent())
@@ -42,6 +41,7 @@ public class AddressesController {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> addAddress(@RequestBody final AddressRestModel address) {
         Long id = addressService.add(address);
         if(id>0)
@@ -51,6 +51,7 @@ public class AddressesController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
     public ResponseEntity<AddressRestModel> updateAddress(@PathVariable final Long id,@RequestBody AddressRestModel address){
         Optional<AddressRestModel> updatedAddress = Optional.ofNullable(addressService.update(id,address));
         if(updatedAddress.isPresent())
@@ -60,6 +61,7 @@ public class AddressesController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteAddress(@PathVariable final Long id){
        Boolean ifDeleted =  addressService.deleteByID(id);
        if(ifDeleted)

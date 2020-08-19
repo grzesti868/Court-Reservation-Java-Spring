@@ -2,6 +2,7 @@ package pl.Korty.Korty.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.ReservationRestModel;
 import pl.Korty.Korty.model.services.ReservationService;
@@ -24,6 +25,7 @@ public class ReservationsController {
 
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ReservationRestModel>> listAllReservations(){
         final List<ReservationRestModel> reservationsList = reservationService.getAll();
 
@@ -31,31 +33,25 @@ public class ReservationsController {
     }
 
     @GetMapping("byUser/{userId}")
+    @PreAuthorize("hasAuthority('reservation:read')") //todo: guest can only by his id
     public ResponseEntity<List<ReservationRestModel>> listAllReservationsByUserId(@PathVariable final Long userId){
         Optional<List<ReservationRestModel>> reservationList = Optional.ofNullable(reservationService.getAllByUserId(userId));
-        if(reservationList.isPresent())
-            return ResponseEntity.ok(reservationList.get());
-        else
-            return ResponseEntity.notFound().build();
+        return reservationList.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 
     @GetMapping("byCourt/{courtId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ReservationRestModel>> getAllReservationByCourtId(@PathVariable final Long courtId){
        Optional<List<ReservationRestModel>> reservationList = Optional.ofNullable(reservationService.getAllByCourtId(courtId));
-       if(reservationList.isPresent())
-            return ResponseEntity.ok(reservationList.get());
-       else
-           return ResponseEntity.notFound().build();
+        return reservationList.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('reservation:read')") //todo: guest can only by reservationId which he posses
     public ResponseEntity<ReservationRestModel> getReservationById(@PathVariable final Long id){
         Optional<ReservationRestModel> reservation = Optional.ofNullable(reservationService.getById(id));
-        if(reservation.isPresent())
-            return ResponseEntity.ok(reservation.get());
-        else
-            return ResponseEntity.notFound().build();
+        return reservation.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
@@ -74,15 +70,14 @@ public class ReservationsController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
     public ResponseEntity<ReservationRestModel> updateReservationById(@PathVariable final Long id,@RequestBody final ReservationRestModel reservation){
         Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(reservationService.update(id,reservation));
-        if(reservationRestModel.isPresent())
-             return ResponseEntity.ok(reservationRestModel.get());
-        else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        return reservationRestModel.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
     public ResponseEntity<String> deleteReservationById(@PathVariable final Long id){
         Boolean isDeleted =  reservationService.deleteByID(id);
         if(isDeleted)

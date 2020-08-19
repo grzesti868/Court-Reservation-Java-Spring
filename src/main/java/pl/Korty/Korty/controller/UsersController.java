@@ -2,6 +2,7 @@ package pl.Korty.Korty.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.UserRestModel;
 import pl.Korty.Korty.model.services.UserService;
@@ -22,6 +23,7 @@ public class UsersController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UserRestModel>> listAllUsers() {
         final List<UserRestModel> userList = userService.getAll();
 
@@ -29,6 +31,7 @@ public class UsersController {
     }
 
     @GetMapping("{login}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserRestModel> getUserByName(@PathVariable final String login) {
         Optional<UserRestModel> user = Optional.ofNullable(userService.getByLogin(login));
         if(user.isPresent())
@@ -51,6 +54,7 @@ public class UsersController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
     public ResponseEntity<UserRestModel> updateUserById(@PathVariable final Long id,@RequestBody final UserRestModel user){
         Optional<UserRestModel> updatedUser = Optional.ofNullable(userService.update(id,user));
         if(updatedUser.isPresent())
@@ -60,6 +64,7 @@ public class UsersController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
     public ResponseEntity<String> deleteUserById(@PathVariable final Long id){
        Boolean isDeleted =  userService.deleteByID(id);
        if(isDeleted)

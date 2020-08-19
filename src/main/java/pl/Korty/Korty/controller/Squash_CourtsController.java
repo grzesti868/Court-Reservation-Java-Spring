@@ -3,10 +3,9 @@ package pl.Korty.Korty.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
-import pl.Korty.Korty.model.responses.UserRestModel;
 import pl.Korty.Korty.model.services.Squash_CourtService;
 
 import java.util.List;
@@ -24,6 +23,7 @@ public class Squash_CourtsController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Squash_CourtRestModel>> listAllCourts() {
         final List<Squash_CourtRestModel> courtList = squash_courtService.getAll();
 
@@ -31,21 +31,25 @@ public class Squash_CourtsController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Squash_CourtRestModel> getById(@PathVariable final Long id){
         return ResponseEntity.ok(squash_courtService.getById(id));
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Long> addCourt(@RequestBody final Squash_CourtRestModel court) {
         return ResponseEntity.ok(squash_courtService.add(court));
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Squash_CourtRestModel> updateCourtById(@PathVariable final Long id,@RequestBody final Squash_CourtRestModel court){
         return ResponseEntity.ok(squash_courtService.update(id,court));
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteCourtById(@PathVariable final Long id){
         squash_courtService.deleteByID(id);
         return new ResponseEntity<>("Squash court has been deleted.", HttpStatus.OK);
