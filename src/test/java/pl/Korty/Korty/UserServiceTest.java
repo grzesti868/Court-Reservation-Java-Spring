@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -50,6 +51,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Transactional
     void deleteUser_deleteUserAndHisAddress_foundAndDeleted() {
         final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
         final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
@@ -58,7 +60,7 @@ public class UserServiceTest {
         assertEquals(1, userRepository.count());
         assertEquals(1, addressRepository.count());
 
-        userService.deleteByID(id);
+        userService.deleteByLogin(user.getLogin());
         assertEquals(0, userRepository.count());
         assertEquals(0, addressRepository.count());
     }
@@ -108,7 +110,7 @@ public class UserServiceTest {
         final AddressRestModel updateAddress = new AddressRestModel("UPDATEnameStreet",1,2,"UPDATEnameCity","44-100","nameCountry");
         final UserRestModel updateUser = new UserRestModel("UPDATEgregvader","UPDATEadmin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
 
-        userService.update(id,updateUser);
+        userService.update(user.getLogin(),updateUser);
         assertEquals(updateUser,userService.getByLogin(updateUser.getLogin()));
     }
 
@@ -132,7 +134,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void updateUser_setInvalidIdAndCorrectUser_returnNull() {
+    void updateUser_setInvalidLoginAndCorrectUser_returnNull() {
         final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
         final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
         Long id = userService.add(user);
@@ -142,11 +144,11 @@ public class UserServiceTest {
         final UserRestModel updateUser = new UserRestModel("UPDATEgregvader","admin123","UPDATEgregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, updateAddress,null);
 
 
-        assertEquals(null, userService.update(id+1,updateUser));
+        assertEquals(null, userService.update("greeegvader",updateUser));
 
     }
     @Test
-    void updateUser_setValidIdZndIncorrectUser_returnNull() {
+    void updateUser_setValidLoginAndIncorrectUser_returnNull() {
         final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
         final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
         Long id = userService.add(user);
@@ -155,12 +157,12 @@ public class UserServiceTest {
         final UserRestModel updateUser = null;
 
 
-        assertEquals(null, userService.update(id,updateUser));
+        assertNull(userService.update(user.getLogin(), updateUser));
     }
 
     @Test
     void deleteUser_cantFindValidUser_RefuseToDelete() {
-        assertEquals(false,userService.deleteByID(8));
+        assertEquals(false,userService.deleteByLogin("testName"));
     }
 
     @Test

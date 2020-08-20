@@ -1,6 +1,5 @@
 package pl.Korty.Korty.model.responses;
 
-import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 
 import java.util.Objects;

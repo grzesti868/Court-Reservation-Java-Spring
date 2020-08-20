@@ -32,10 +32,10 @@ public class ReservationsController {
         return ResponseEntity.ok(reservationsList);
     }
 
-    @GetMapping("byUser/{userId}")
-    @PreAuthorize("hasAuthority('reservation:read')") //todo: guest can only by his id
-    public ResponseEntity<List<ReservationRestModel>> listAllReservationsByUserId(@PathVariable final Long userId){
-        Optional<List<ReservationRestModel>> reservationList = Optional.ofNullable(reservationService.getAllByUserId(userId));
+    @GetMapping("byUser/{login}")
+    @PreAuthorize("hasAuthority('reservation:read') or #login == authentication.name")
+    public ResponseEntity<List<ReservationRestModel>> listAllReservationsByUserLogin(@PathVariable final String login){
+        Optional<List<ReservationRestModel>> reservationList = Optional.ofNullable(reservationService.getAllByUserLogin(login));
         return reservationList.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -48,7 +48,7 @@ public class ReservationsController {
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAuthority('reservation:read')") //todo: guest can only by reservationId which he posses
+    @PreAuthorize("hasAuthority('reservation:read')")
     public ResponseEntity<ReservationRestModel> getReservationById(@PathVariable final Long id){
         Optional<ReservationRestModel> reservation = Optional.ofNullable(reservationService.getById(id));
         return reservation.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -79,7 +79,7 @@ public class ReservationsController {
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
     public ResponseEntity<String> deleteReservationById(@PathVariable final Long id){
-        Boolean isDeleted =  reservationService.deleteByID(id);
+        Boolean isDeleted =  reservationService.deleteById(id);
         if(isDeleted)
             return ResponseEntity.status(HttpStatus.OK).body("Reservation has been deleted.");
         else

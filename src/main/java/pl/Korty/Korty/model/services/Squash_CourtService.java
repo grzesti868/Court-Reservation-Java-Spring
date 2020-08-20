@@ -87,9 +87,9 @@ public class Squash_CourtService {
     }
 
 
-    public Squash_CourtsEntity getByAddressId(Long addressId){
+    public Squash_CourtRestModel getByAddressId(Long addressId){
         if(addressRepository.existsById(addressId))
-        return squash_courtsRepository.findBySquashCourtAddressId(addressId);
+            return new Squash_CourtRestModel(squash_courtsRepository.getOne(addressId));
         else
             return null;
     }

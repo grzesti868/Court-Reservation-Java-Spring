@@ -48,20 +48,21 @@ public class UserService {
             return -3L;
     }
 
-    public UserRestModel update(final Long id, final UserRestModel user) {
+    public UserRestModel update(final String login, final UserRestModel user) {
 
         Optional<UserRestModel> updateUser = Optional.ofNullable(user);
 
-        if(updateUser.isPresent() && userRepository.existsById(id))
+        if(updateUser.isPresent() && userRepository.existsByLogin(login))
         {
-            Optional<UsersEntity> userToUpdate =userRepository.findById(id);
+            Optional<UsersEntity> userToUpdate =Optional.ofNullable(userRepository.findByLogin(login));
             if(userToUpdate.isPresent())
             {
+                if(!userRepository.existsByLogin(updateUser.get().getLogin()))
+                    userToUpdate.get().setLogin(updateUser.get().getLogin());
 
                 userToUpdate.get().setEmail(updateUser.get().getEmail());
                 userToUpdate.get().setFirstname(updateUser.get().getFirstname());
                 userToUpdate.get().setLastname(updateUser.get().getLastname());
-                userToUpdate.get().setLogin(updateUser.get().getLogin());
                 userToUpdate.get().setPassword(updateUser.get().getPassword());
                 userToUpdate.get().setSex(updateUser.get().getSex());
                 userToUpdate.get().setStatus(updateUser.get().getStatus());
@@ -93,9 +94,9 @@ public class UserService {
             return null;
     }
 
-    public Boolean deleteByID(final long id){
-        if(userRepository.existsById(id)){
-            userRepository.deleteById(id);
+    public Boolean deleteByLogin(final String login){
+        if(userRepository.existsByLogin(login)){
+            userRepository.deleteByLogin(login);
             return Boolean.TRUE;
         }
         else

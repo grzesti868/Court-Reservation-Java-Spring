@@ -9,4 +9,5 @@ public interface UserRepository extends JpaRepository<UsersEntity,Long> {
 
     UsersEntity findByLogin(String login);
     boolean  existsByLogin(String login);
+    void deleteByLogin(String login);
 }

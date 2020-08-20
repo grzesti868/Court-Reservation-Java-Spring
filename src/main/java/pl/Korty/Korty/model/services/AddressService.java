@@ -29,7 +29,7 @@ public class AddressService {
         if(newAddress.isPresent())
         return addressRepository.save(mapRestModel(address)).getId();
         else
-            return  Long.valueOf(-1);
+            return  -1L;
     }
 
     public AddressRestModel update(final Long id, final AddressRestModel address) {
@@ -66,12 +66,9 @@ public class AddressService {
 
     public AddressRestModel getById(final Long id) {
 
-            Optional<AddressesEntity> address = Optional.ofNullable(addressRepository.findById(id).orElse(null));
+            Optional<AddressesEntity> address = addressRepository.findById(id);
 
-        if(address.isPresent())
-            return new AddressRestModel(address.get());
-        else
-            return null;
+        return address.map(AddressRestModel::new).orElse(null);
     }
 
     private AddressesEntity mapRestModel(final AddressRestModel model) {

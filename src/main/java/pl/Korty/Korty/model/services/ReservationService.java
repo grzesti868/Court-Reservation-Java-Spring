@@ -38,9 +38,9 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationRestModel> getAllByUserId(final Long id){
-        if(userRepository.existsById(id))
-        return reservationRepository.findAllByReservationUserId(id).stream()
+    public List<ReservationRestModel> getAllByUserLogin(final String login){
+        if(userRepository.existsByLogin(login))
+        return reservationRepository.findAllByReservationUserLogin(login).stream()
                 .map(ReservationRestModel::new)
                 .collect(Collectors.toList());
         else
@@ -80,7 +80,7 @@ public class ReservationService {
         }
     }
 
-    public ReservationRestModel update(final Long id, ReservationRestModel reservation) //TODO: check if reservation is correct
+    public ReservationRestModel update(final Long id, ReservationRestModel reservation)
     {
         Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(reservation);
         if(reservationRepository.existsById(id) && reservationRestModel.isPresent()){
@@ -101,7 +101,7 @@ public class ReservationService {
             return null;
     }
 
-    public Boolean deleteByID(final long id){
+    public Boolean deleteById(final long id){
         if(reservationRepository.existsById(id)) {
             reservationRepository.deleteById(id);
             return Boolean.TRUE;
@@ -118,7 +118,6 @@ public class ReservationService {
     }
 
     private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) {
-        //System.out.println("MODEL REZERWACJI:"+ model.toString());
 
         if(!isTimeValid(model.getStart_date(),model.getEnd_date(),model.getCourtId()))
             return null;//can't book in this period of time
@@ -126,8 +125,6 @@ public class ReservationService {
         ReservationsEntity reservationsEntity = new ReservationsEntity(model.getStart_date(),model.getEnd_date(),model.getPeople_num(), model.getAdditional_info());
 
         reservationsEntity.setReservationSquashCourt(squash_courtsRepository.findById(model.getCourtId()).get());
-
-        //System.out.println("BAZOWA ENCJA:"+reservationsEntity.toString());
 
         Optional<String> reservationUser = Optional.ofNullable(model.getUserLogin());
         if(reservationUser.isEmpty()) {
@@ -140,7 +137,6 @@ public class ReservationService {
             if(userRepository.existsByLogin(newUser.getLogin())){
                 return null; //login is already existing in db
             }
-            //System.out.println("NOWY USER:"+newUser.toString());
             reservationsEntity.setReservationUser(newUser);
         } else {
             Optional<UsersEntity> oldUser = Optional.ofNullable(userRepository.findByLogin(reservationUser.get()));
@@ -167,7 +163,7 @@ public class ReservationService {
         return userToAdd;
     }
 
-    public Boolean isTimeValid(Date start, Date end, Long idCourt) { //TODO: change to private after all is ok and delete test
+    private Boolean isTimeValid(Date start, Date end, Long idCourt) {
 
 
 

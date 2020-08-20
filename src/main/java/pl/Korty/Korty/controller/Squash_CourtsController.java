@@ -31,6 +31,13 @@ public class Squash_CourtsController {
         return ResponseEntity.ok(courtList);
     }
 
+    @GetMapping("byAddress/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Squash_CourtRestModel> getByAddressId(@PathVariable final Long id){
+        Optional<Squash_CourtRestModel> court = Optional.ofNullable(squash_courtService.getByAddressId(id));
+        return court.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
     @GetMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Squash_CourtRestModel> getById(@PathVariable final Long id){

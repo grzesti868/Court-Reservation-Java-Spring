@@ -7,5 +7,5 @@ import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 @Repository
 public interface Squash_CourtsRepository extends JpaRepository<Squash_CourtsEntity,Long> {
 
-    public Squash_CourtsEntity findBySquashCourtAddressId(Long id);
+    Squash_CourtsEntity findBySquashCourtAddressId(Long id);
 }

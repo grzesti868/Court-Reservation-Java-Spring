@@ -1,12 +1,8 @@
 package pl.Korty.Korty.model.responses;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.catalina.User;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
-import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
-import pl.Korty.Korty.model.entities.UsersEntity;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 

@@ -31,7 +31,7 @@ public class AddressesController {
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAuthority('address:read')") //todo: guest can only his id
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AddressRestModel> getAddressById(@PathVariable final Long id){
         Optional<AddressRestModel> address = Optional.ofNullable(addressService.getById(id));
         if(address.isPresent())
@@ -51,7 +51,7 @@ public class AddressesController {
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AddressRestModel> updateAddress(@PathVariable final Long id,@RequestBody AddressRestModel address){
         Optional<AddressRestModel> updatedAddress = Optional.ofNullable(addressService.update(id,address));
         return updatedAddress.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body(null));

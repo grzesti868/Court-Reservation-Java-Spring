@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.UserRestModel;
 import pl.Korty.Korty.model.services.UserService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,18 +54,19 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User's data is empty");
     }
 
-    @PutMapping("{id}")
-    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id AND check if username can be changed etc
-    public ResponseEntity<UserRestModel> updateUserById(@PathVariable final Long id,@RequestBody final UserRestModel user){
-        Optional<UserRestModel> updatedUser = Optional.ofNullable(userService.update(id,user));
+    @PutMapping("{login}")
+    @PreAuthorize("hasAuthority('address:write') or #login == authentication.name")
+    public ResponseEntity<UserRestModel> updateUserByLogin(@PathVariable final String login,@RequestBody final UserRestModel user){
+        Optional<UserRestModel> updatedUser = Optional.ofNullable(userService.update(login,user));
         return updatedUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body(null));
     }
 
-    @DeleteMapping("{id}")
-    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
-    public ResponseEntity<String> deleteUserById(@PathVariable final Long id){
+    @DeleteMapping("{login}")
+    @Transactional
+    @PreAuthorize("hasAuthority('address:write') or #login == authentication.name")
+    public ResponseEntity<String> deleteUserByLogin(@PathVariable final String login){
 
-       Boolean isDeleted =  userService.deleteByID(id);
+       Boolean isDeleted =  userService.deleteByLogin(login);
        if(isDeleted)
         return ResponseEntity.status(HttpStatus.OK).body("User has been deleted.");
        else
