@@ -31,7 +31,7 @@ public class UsersController {
     }
 
     @GetMapping("{login}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #login == authentication.name")
     public ResponseEntity<UserRestModel> getUserByName(@PathVariable final String login) {
         Optional<UserRestModel> user = Optional.ofNullable(userService.getByLogin(login));
         if(user.isPresent())
@@ -54,18 +54,16 @@ public class UsersController {
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
+    @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id AND check if username can be changed etc
     public ResponseEntity<UserRestModel> updateUserById(@PathVariable final Long id,@RequestBody final UserRestModel user){
         Optional<UserRestModel> updatedUser = Optional.ofNullable(userService.update(id,user));
-        if(updatedUser.isPresent())
-            return ResponseEntity.ok(updatedUser.get());
-        else
-            return ResponseEntity.badRequest().body(null);
+        return updatedUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body(null));
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('address:write')") //todo: guest can only his id
     public ResponseEntity<String> deleteUserById(@PathVariable final Long id){
+
        Boolean isDeleted =  userService.deleteByID(id);
        if(isDeleted)
         return ResponseEntity.status(HttpStatus.OK).body("User has been deleted.");

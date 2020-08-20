@@ -6,9 +6,11 @@ import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.repositories.Squash_CourtsRepository;
+import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,39 +31,67 @@ public class Squash_CourtService {
     }
 
     public Long add(final Squash_CourtRestModel court) {
-        return squash_courtsRepository.save(mapRestModel(court)).getId();
+        Optional<Squash_CourtRestModel> newCourt = Optional.ofNullable(court);
+        if(newCourt.isEmpty()){
+            return -1L; //new court is empty
+        } else {
+            if(Optional.ofNullable(newCourt.get().getAddressRestModel()).isEmpty()){
+                return -2L; //address court is empty
+            }else{
+                return squash_courtsRepository.save(mapRestModel(court)).getId();
+            }
+        }
     }
 
     public Squash_CourtRestModel update(final Long id, final Squash_CourtRestModel court) {
 
-        Squash_CourtsEntity courtToUpdate = squash_courtsRepository.findById(id).get();
+        Optional<Squash_CourtsEntity> courtToUpdate = squash_courtsRepository.findById(id);
+        if(courtToUpdate.isPresent()){
 
-        courtToUpdate.setFields_num(court.getFields_num());
+            courtToUpdate.get().setFields_num(court.getFields_num());
+            Optional<AddressRestModel> courtAddress = Optional.ofNullable(court.getAddressRestModel());
 
-        AddressesEntity updateCourtAddress = addressRepository.findById(courtToUpdate.getSquashCourtAddress().getId()).get();
-        updateCourtAddress.setStreet(court.getAddressRestModel().getStreet());
-        updateCourtAddress.setBuilding_num(court.getAddressRestModel().getBuilding_num());
-        updateCourtAddress.setApartment_num(court.getAddressRestModel().getApartment_num());
-        updateCourtAddress.setCity(court.getAddressRestModel().getCity());
-        updateCourtAddress.setPostal_code(court.getAddressRestModel().getPostal_code());
-        updateCourtAddress.setCountry(court.getAddressRestModel().getCountry());
+            if(courtAddress.isPresent()){
+                AddressesEntity updateCourtAddress = addressRepository.findById(courtToUpdate.get().getSquashCourtAddress().getId()).get();
+                updateCourtAddress.setStreet(court.getAddressRestModel().getStreet());
+                updateCourtAddress.setBuilding_num(court.getAddressRestModel().getBuilding_num());
+                updateCourtAddress.setApartment_num(court.getAddressRestModel().getApartment_num());
+                updateCourtAddress.setCity(court.getAddressRestModel().getCity());
+                updateCourtAddress.setPostal_code(court.getAddressRestModel().getPostal_code());
+                updateCourtAddress.setCountry(court.getAddressRestModel().getCountry());
 
+                addressRepository.save(updateCourtAddress);
 
-        addressRepository.save(updateCourtAddress);
-        return new Squash_CourtRestModel(squash_courtsRepository.save(courtToUpdate));
+            }
+
+            return new Squash_CourtRestModel(squash_courtsRepository.save(courtToUpdate.get()));
+        }else
+            return null;
+
     }
 
-    public void deleteByID(final long id){
-        squash_courtsRepository.deleteById(id);
+    public Boolean deleteByID(final long id){
+        if(squash_courtsRepository.existsById(id)){
+            squash_courtsRepository.deleteById(id);
+            return Boolean.TRUE;
+        }
+        else
+            return Boolean.FALSE;
     }
 
     public Squash_CourtRestModel getById(final Long id) {
+        if(squash_courtsRepository.existsById(id))
         return new Squash_CourtRestModel(squash_courtsRepository.getOne(id));
+        else
+            return null;
     }
 
 
     public Squash_CourtsEntity getByAddressId(Long addressId){
+        if(addressRepository.existsById(addressId))
         return squash_courtsRepository.findBySquashCourtAddressId(addressId);
+        else
+            return null;
     }
 
     private Squash_CourtsEntity mapRestModel(final Squash_CourtRestModel model) {

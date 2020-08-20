@@ -62,8 +62,8 @@ public class ApplicationSecurityConfig  extends WebSecurityConfigurerAdapter {
 
         final UserDetails guest =
                 User.builder()
-                        .username("test")
-                        .password(passwordEncoder.encode("test"))
+                        .username("gregvader")
+                        .password(passwordEncoder.encode("gregvader"))
                         //.roles(GUEST.name()) //ROLE_GUEST
                         .authorities(GUEST.getGratedAuthorities())
                         .build();
