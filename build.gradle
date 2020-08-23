@@ -18,7 +18,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// https://mvnrepository.com/artifact/com.google.guava/guava
 	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
-
+	compile 'mysql:mysql-connector-java:8.0.19'
 
 	runtimeOnly 'com.h2database:h2'
 

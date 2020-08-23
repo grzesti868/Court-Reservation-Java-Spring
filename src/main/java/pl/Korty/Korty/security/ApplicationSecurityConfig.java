@@ -5,18 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-
-import static pl.Korty.Korty.model.enums.ApplicationUserRole.ADMIN;
-import static pl.Korty.Korty.model.enums.ApplicationUserRole.GUEST;
+import pl.Korty.Korty.auth.ApplicationUserService;
 
 @Configuration
 @EnableWebSecurity
@@ -24,10 +20,12 @@ import static pl.Korty.Korty.model.enums.ApplicationUserRole.GUEST;
 public class ApplicationSecurityConfig  extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationUserService applicationUserService;
 
     @Autowired
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder) {
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserService applicationUserService) {
         this.passwordEncoder = passwordEncoder;
+        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -50,24 +48,16 @@ public class ApplicationSecurityConfig  extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
+
     @Bean
-    protected UserDetailsService userDetailsService() {
-        final UserDetails admin =
-                User.builder()
-                        .username("admin")
-                        .password(passwordEncoder.encode("admin123"))
-                        //.roles(ADMIN.name()) //ROLE_ADMIN
-                        .authorities(ADMIN.getGratedAuthorities())
-                        .build();
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(applicationUserService);
 
-        final UserDetails guest =
-                User.builder()
-                        .username("gregvader")
-                        .password(passwordEncoder.encode("gregvader"))
-                        //.roles(GUEST.name()) //ROLE_GUEST
-                        .authorities(GUEST.getGratedAuthorities())
-                        .build();
-
-        return new InMemoryUserDetailsManager(admin,guest);
+        return provider;
     }
 }
