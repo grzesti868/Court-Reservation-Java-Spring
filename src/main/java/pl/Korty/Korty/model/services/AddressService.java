@@ -1,6 +1,8 @@
 package pl.Korty.Korty.model.services;
 
 import org.springframework.stereotype.Service;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
@@ -26,41 +28,40 @@ public class AddressService {
 
     public Long add(final AddressRestModel address) {
         Optional<AddressRestModel> newAddress = Optional.ofNullable(address);
-        if(newAddress.isPresent())
+
+       if(newAddress.isPresent())
         return addressRepository.save(mapRestModel(address)).getId();
         else
-            return  -1L;
+            throw new ApiRequestException("Address can not be empty.");
     }
 
     public AddressRestModel update(final Long id, final AddressRestModel address) {
 
-        Optional<AddressRestModel> updateAddress = Optional.ofNullable(address);
+        Optional<AddressRestModel> updateAddress = Optional.ofNullable(Optional.ofNullable(address)
+                .orElseThrow(() -> new ApiRequestException("Address can not be empty")));
 
-        if(updateAddress.isPresent() && addressRepository.existsById(id)){
-            Optional<AddressesEntity> addressToUpdate = addressRepository.findById(id);
-            if(addressToUpdate.isPresent()){
+
+        Optional<AddressesEntity> addressToUpdate = Optional.ofNullable(addressRepository.findById(id)
+                .orElseThrow(() -> new ApiRequestException(String.format("Address by id %d was not found", id))));
+
                 addressToUpdate.get().setStreet(updateAddress.get().getStreet());
                 addressToUpdate.get().setApartment_num(updateAddress.get().getApartment_num());
                 addressToUpdate.get().setBuilding_num(updateAddress.get().getBuilding_num());
                 addressToUpdate.get().setCity(updateAddress.get().getCity());
                 addressToUpdate.get().setPostal_code(updateAddress.get().getPostal_code());
                 addressToUpdate.get().setCountry(updateAddress.get().getCountry());
+
                 return new AddressRestModel(addressRepository.save(addressToUpdate.get()));
-            } else {
-                return null;
-            }
-        }
-        else
-            return null;
+
+
     }
 
-    public Boolean deleteByID(final long id){
-        if(addressRepository.existsById(id)){
+    public void deleteByID(final long id){
+
+        if(addressRepository.existsById(id))
             addressRepository.deleteById(id);
-            return Boolean.TRUE;
-        }
         else
-            return Boolean.FALSE;
+           throw new ApiNotFoundException(String.format("Address by id %d does not exists",id));
 
     }
 
@@ -68,7 +69,7 @@ public class AddressService {
 
             Optional<AddressesEntity> address = addressRepository.findById(id);
 
-        return address.map(AddressRestModel::new).orElse(null);
+        return address.map(AddressRestModel::new).orElseThrow(() -> new ApiNotFoundException(String.format("Address by id %d was not found",id)));
     }
 
     private AddressesEntity mapRestModel(final AddressRestModel model) {

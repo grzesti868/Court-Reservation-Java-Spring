@@ -13,8 +13,17 @@ public class ApiExceptionHandler { //todo: implements exception to services/cont
 
     @ExceptionHandler(value = {ApiRequestException.class})
     public ResponseEntity<Object> handleApiRequestException(ApiRequestException e) {
-       ApiException apiException = new ApiException(e.getMessage(),e, HttpStatus.BAD_REQUEST, ZonedDateTime.now(ZoneId.of("Z")));
+       ApiException apiException = new ApiException(e.getMessage(), HttpStatus.BAD_REQUEST, ZonedDateTime.now(ZoneId.of("Z")));
 
        return new ResponseEntity<>(apiException,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = {ApiNotFoundException.class})
+    public ResponseEntity<Object> handleApiNotFoundException(ApiNotFoundException e) {
+        ApiException apiException = new ApiException(e.getMessage(), HttpStatus.NOT_FOUND, ZonedDateTime.now(ZoneId.of("Z")));
+
+        return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
+    }
+
+
 }

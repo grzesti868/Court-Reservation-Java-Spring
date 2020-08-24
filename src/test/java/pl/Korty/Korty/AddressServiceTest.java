@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.services.AddressService;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -83,19 +86,37 @@ public class AddressServiceTest {
     }
 
     @Test
-    void addNewAddress_addInvalidAddress_RefuseToAdd() {
-        final AddressRestModel address = null;
-        Long id = addressService.add(address);
-        assertEquals(-1,id);
+    void getOneById_addressNotFound_throwException() {
+        assertThrows(ApiNotFoundException.class,() -> addressService.getById(1L));
     }
 
     @Test
-    void updateUser_invalidIdAndAddressToUpdate_RefuseToUdpdate() {
+    void addNewAddress_addInvalidAddress_RefuseToAdd() {
+        final AddressRestModel address = null;
+        assertThrows(ApiRequestException.class,() -> addressService.add(address));
+    }
+
+    @Test
+    void updateUser_emptyAddressToUpdate_RefuseToUpdate() {
         final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
         Long id = addressService.add(address);
         final AddressRestModel updateAddress = null;
-        addressService.update(id+1,updateAddress);
 
-        assertEquals(null,addressService.update(id,updateAddress));
+        assertThrows(ApiRequestException.class,() -> addressService.update(id,updateAddress));
+    }
+
+    @Test
+    void updateUser_invalidIdToUpdate_throwException() {
+        final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
+        Long id = addressService.add(address);
+        final AddressRestModel updateAddress = new AddressRestModel("UPDATE",1,2,"nameCity","44-100","nameCountry");
+
+        assertThrows(ApiRequestException.class,() -> addressService.update(id+1,updateAddress));
+    }
+
+    @Test
+    void deleteAddress_addressDoesNotExists_throwException() {
+
+        assertThrows(ApiNotFoundException.class,()->addressService.deleteByID(1L));
     }
 }
