@@ -29,7 +29,7 @@ public class FakeApplicationUserDaoService implements  ApplicationUserDao{
                 .findFirst();
     }
 
-    private List<ApplicationUser> getApplicationUsers(){
+    private List<ApplicationUser> getApplicationUsers(){ //todo: get users from db
         List<ApplicationUser> applicationUsers = Lists.newArrayList(
                 new ApplicationUser(
                         "admin",
@@ -52,6 +52,8 @@ public class FakeApplicationUserDaoService implements  ApplicationUserDao{
                         true
                 )
         );
+
+
         return applicationUsers;
     }
 }
