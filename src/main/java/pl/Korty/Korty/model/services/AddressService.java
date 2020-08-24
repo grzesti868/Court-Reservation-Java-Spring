@@ -69,7 +69,8 @@ public class AddressService {
 
             Optional<AddressesEntity> address = addressRepository.findById(id);
 
-        return address.map(AddressRestModel::new).orElseThrow(() -> new ApiNotFoundException(String.format("Address by id %d was not found",id)));
+        return address.map(AddressRestModel::new)
+                .orElseThrow(() -> new ApiNotFoundException(String.format("Address by id %d was not found",id)));
     }
 
     private AddressesEntity mapRestModel(final AddressRestModel model) {

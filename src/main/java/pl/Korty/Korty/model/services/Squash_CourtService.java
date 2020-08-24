@@ -2,6 +2,8 @@ package pl.Korty.Korty.model.services;
 
 
 import org.springframework.stereotype.Service;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.Squash_CourtsEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
@@ -32,66 +34,73 @@ public class Squash_CourtService {
 
     public Long add(final Squash_CourtRestModel court) {
         Optional<Squash_CourtRestModel> newCourt = Optional.ofNullable(court);
-        if(newCourt.isEmpty()){
-            return -1L; //new court is empty
-        } else {
-            if(Optional.ofNullable(newCourt.get().getAddressRestModel()).isEmpty()){
-                return -2L; //address court is empty
-            }else{
+
+        if(newCourt.isEmpty())
+           throw new ApiRequestException("New court can not be empty");
+
+        else if(Optional.ofNullable(newCourt.get().getAddressRestModel()).isEmpty())
+                throw new ApiRequestException("Address of new court can not be empty");
+
+            else
                 return squash_courtsRepository.save(mapRestModel(court)).getId();
-            }
-        }
     }
 
     public Squash_CourtRestModel update(final Long id, final Squash_CourtRestModel court) {
 
-        Optional<Squash_CourtsEntity> courtToUpdate = squash_courtsRepository.findById(id);
-        if(courtToUpdate.isPresent()){
+        Optional<Squash_CourtRestModel> updateCourt = Optional.ofNullable(Optional.ofNullable(court)
+                .orElseThrow(() -> new ApiRequestException("Update court can not be empty")));
 
-            courtToUpdate.get().setFields_num(court.getFields_num());
-            Optional<AddressRestModel> courtAddress = Optional.ofNullable(court.getAddressRestModel());
+        Optional<Squash_CourtsEntity> courtToUpdate = Optional.ofNullable(squash_courtsRepository.findById(id)
+                .orElseThrow(() -> new ApiRequestException(String.format("Court by id %d to update does not exist",id))));
 
-            if(courtAddress.isPresent()){
-                AddressesEntity updateCourtAddress = addressRepository.findById(courtToUpdate.get().getSquashCourtAddress().getId()).get();
-                updateCourtAddress.setStreet(court.getAddressRestModel().getStreet());
-                updateCourtAddress.setBuilding_num(court.getAddressRestModel().getBuilding_num());
-                updateCourtAddress.setApartment_num(court.getAddressRestModel().getApartment_num());
-                updateCourtAddress.setCity(court.getAddressRestModel().getCity());
-                updateCourtAddress.setPostal_code(court.getAddressRestModel().getPostal_code());
-                updateCourtAddress.setCountry(court.getAddressRestModel().getCountry());
 
-                addressRepository.save(updateCourtAddress);
 
-            }
 
-            return new Squash_CourtRestModel(squash_courtsRepository.save(courtToUpdate.get()));
-        }else
-            return null;
+        Optional<AddressRestModel> courtAddress = Optional.ofNullable(Optional.ofNullable(court.getAddressRestModel())
+                    .orElseThrow(() -> new ApiRequestException("Address of updated court can not be empty")));
+
+        courtToUpdate.get().setFields_num(updateCourt.get().getFields_num());
+
+        AddressesEntity updateCourtAddress = addressRepository.findById(courtToUpdate.get().getSquashCourtAddress().getId()).get();
+        updateCourtAddress.setStreet(courtAddress.get().getStreet());
+        updateCourtAddress.setBuilding_num(courtAddress.get().getBuilding_num());
+        updateCourtAddress.setApartment_num(courtAddress.get().getApartment_num());
+        updateCourtAddress.setCity(courtAddress.get().getCity());
+        updateCourtAddress.setPostal_code(courtAddress.get().getPostal_code());
+        updateCourtAddress.setCountry(courtAddress.get().getCountry());
+
+        addressRepository.save(updateCourtAddress);
+
+
+
+        return new Squash_CourtRestModel(squash_courtsRepository.save(courtToUpdate.get()));
+
 
     }
 
-    public Boolean deleteByID(final long id){
-        if(squash_courtsRepository.existsById(id)){
+    public void deleteByID(final long id){
+
+        if(squash_courtsRepository.existsById(id))
             squash_courtsRepository.deleteById(id);
-            return Boolean.TRUE;
-        }
         else
-            return Boolean.FALSE;
+            throw new ApiNotFoundException(String.format("Court by id %d does not exists",id));
     }
 
     public Squash_CourtRestModel getById(final Long id) {
-        if(squash_courtsRepository.existsById(id))
-        return new Squash_CourtRestModel(squash_courtsRepository.getOne(id));
-        else
-            return null;
+
+        Optional<Squash_CourtsEntity> court = squash_courtsRepository.findById(id);
+
+        return court.map(Squash_CourtRestModel::new)
+                .orElseThrow(() -> new ApiNotFoundException(String.format("Court by id %d was not found.",id)));
     }
 
 
     public Squash_CourtRestModel getByAddressId(Long addressId){
-        if(addressRepository.existsById(addressId))
-            return new Squash_CourtRestModel(squash_courtsRepository.getOne(addressId));
-        else
-            return null;
+
+        Optional<Squash_CourtsEntity> court = Optional.ofNullable(squash_courtsRepository.findBySquashCourtAddressId(addressId));
+
+            return court.map(Squash_CourtRestModel::new)
+                    .orElseThrow(()->new ApiNotFoundException(String.format("No court was found by address id: %d.",addressId)));
     }
 
     private Squash_CourtsEntity mapRestModel(final Squash_CourtRestModel model) {
@@ -109,7 +118,5 @@ public class Squash_CourtService {
         squash_courtToAdd.setSquashCourtAddress(addressOfSquash_Court);
         return squash_courtToAdd;
     }
-
-
 
 }

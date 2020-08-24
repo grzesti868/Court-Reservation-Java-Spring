@@ -1,7 +1,6 @@
 package pl.Korty.Korty.controller;
 
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +8,6 @@ import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
 import pl.Korty.Korty.model.services.Squash_CourtService;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -34,43 +32,33 @@ public class Squash_CourtsController {
     @GetMapping("byAddress/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Squash_CourtRestModel> getByAddressId(@PathVariable final Long id){
-        Optional<Squash_CourtRestModel> court = Optional.ofNullable(squash_courtService.getByAddressId(id));
-        return court.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return ResponseEntity.ok(squash_courtService.getByAddressId(id));
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Squash_CourtRestModel> getById(@PathVariable final Long id){
-        Optional<Squash_CourtRestModel> court = Optional.ofNullable(squash_courtService.getById(id));
-        return court.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return ResponseEntity.ok(squash_courtService.getById(id));
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> addCourt(@RequestBody final Squash_CourtRestModel court) {
-        Long courtId = squash_courtService.add(court);
-        if(courtId>0)
-            return ResponseEntity.ok("Court has been added: "+courtId);
-        else if(courtId.equals(-1L))
-            return  ResponseEntity.badRequest().body("New court is empty.");
-        else
-            return  ResponseEntity.badRequest().body("New court has no address.");
+        return ResponseEntity.ok("Court added successful. Id: "+squash_courtService.add(court));
     }
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Squash_CourtRestModel> updateCourtById(@PathVariable final Long id,@RequestBody final Squash_CourtRestModel court){
-        Optional<Squash_CourtRestModel> updatedCourt = Optional.ofNullable(squash_courtService.update(id,court));
-        return updatedCourt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
+        return ResponseEntity.ok(squash_courtService.update(id,court));
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteCourtById(@PathVariable final Long id){
-        Boolean isDeleted = squash_courtService.deleteByID(id);
-        if(isDeleted)
-        return new ResponseEntity<>("Squash court has been deleted.", HttpStatus.OK);
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Court not found.");
+
+        squash_courtService.deleteByID(id);
+        return ResponseEntity.ok("Squash court has been deleted.");
+
     }
 }
