@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
 import pl.Korty.Korty.model.repositories.AddressRepository;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -116,25 +118,19 @@ public class UserServiceTest {
 
     @Test
     void addUser_addEmptyUser_refuseToAdd() {
-
-        final UserRestModel user = null;
-        assertEquals(0, userRepository.count());
-        Long id = userService.add(user);
-        assertEquals(-3, id);
+        assertThrows(ApiRequestException.class,()->userService.add(null));
     }
 
     @Test
     void addUser_addUSerWithoutAddress_refuseToAddUser() {
         final AddressRestModel address = null;
         final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
-        Long id = userService.add(user);
-        assertEquals(0, userRepository.count());
-        assertEquals(0,addressRepository.count());
-        assertEquals(-1,id);
+
+        assertThrows(ApiRequestException.class , () -> userService.add(user));
     }
 
     @Test
-    void updateUser_setInvalidLoginAndCorrectUser_returnNull() {
+    void updateUser_setInvalidLoginAndCorrectUser_throwException() {
         final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
         final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
         Long id = userService.add(user);
@@ -143,12 +139,11 @@ public class UserServiceTest {
         final AddressRestModel updateAddress = new AddressRestModel("UPDATEnameStreet",1,2,"UPDATEnameCity","44-100","nameCountry");
         final UserRestModel updateUser = new UserRestModel("UPDATEgregvader","admin123","UPDATEgregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, updateAddress,null);
 
-
-        assertEquals(null, userService.update("greeegvader",updateUser));
-
+        assertThrows(ApiRequestException.class,()->userService.update("greeegvader",updateUser));
     }
+
     @Test
-    void updateUser_setValidLoginAndIncorrectUser_returnNull() {
+    void updateUser_setValidLoginAndIncorrectUser_throwException() {
         final AddressRestModel address = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
         final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
         Long id = userService.add(user);
@@ -156,19 +151,18 @@ public class UserServiceTest {
 
         final UserRestModel updateUser = null;
 
-
-        assertNull(userService.update(user.getLogin(), updateUser));
+        assertThrows(ApiRequestException.class,()->userService.update(user.getLogin(),updateUser));
     }
 
     @Test
-    void deleteUser_cantFindValidUser_RefuseToDelete() {
-        assertEquals(false,userService.deleteByLogin("testName"));
+    void deleteUser_cantFindValidUser_throwException() {
+        assertThrows(ApiNotFoundException.class, ()->userService.deleteByLogin("ogin"));
     }
 
     @Test
-    void findUserById_cantFindValidUser_returnNull() {
+    void findUserById_cantFindValidUser_throwException() {
 
-        assertEquals(null,userService.getByLogin("someLogin"));
+        assertThrows(ApiNotFoundException.class,()->userService.getByLogin("someLogin"));
 
     }
 
@@ -179,9 +173,10 @@ public class UserServiceTest {
         Long id = userService.add(user);
         assertEquals(1, userRepository.count());
         final AddressRestModel newAddress = new AddressRestModel("asdasdaa",1,2,"nameCity","44-100","nameCountry");
-        final UserRestModel newUser = new UserRestModel("gregvader","asdasda","asdasdasd@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
+        final UserRestModel newUser = new UserRestModel("gregvader","asdasda","asdasdasd@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, newAddress,null);
 
-        assertEquals(-2L, userService.add(newUser));
+
+        assertThrows(ApiRequestException.class , () -> userService.add(newUser));
         assertEquals(1, userRepository.count());
 
     }

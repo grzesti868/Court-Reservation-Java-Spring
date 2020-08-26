@@ -1,6 +1,8 @@
 package pl.Korty.Korty.model.services;
 
 import org.springframework.stereotype.Service;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.repositories.AddressRepository;
@@ -32,42 +34,41 @@ public class UserService {
 
     public Long add(final UserRestModel user) {
         Optional<UserRestModel> newUser = Optional.ofNullable(user);
-        if(newUser.isPresent()){
-            if(!userRepository.existsByLogin(newUser.get().getLogin()))
-            {
-                Optional<AddressRestModel> hasAddress = Optional.ofNullable(newUser.get().getAddressRestModel());
-                if(hasAddress.isPresent())
-                    return userRepository.save(mapRestModel(user)).getId();
-                else
-                    return -1L;
-            }
-            else
-                return -2L;
-        }
-        else
-            return -3L;
+
+        if(newUser.isEmpty())
+            throw new ApiRequestException("New user can not be empty.");
+
+        if(userRepository.existsByLogin(newUser.get().getLogin()))
+            throw new ApiRequestException("User's login already exists.");
+
+        Optional<AddressRestModel> hasAddress = Optional.ofNullable(newUser.get().getAddressRestModel());
+
+        if(hasAddress.isEmpty())
+            throw new ApiRequestException("User's address can not be empty.");
+
+        return userRepository.save(mapRestModel(newUser.get())).getId();
+
     }
 
     public UserRestModel update(final String login, final UserRestModel user) {
 
-        Optional<UserRestModel> updateUser = Optional.ofNullable(user);
+        Optional<UserRestModel> updateUser = Optional.ofNullable(Optional.ofNullable(user)
+                .orElseThrow(() -> new ApiRequestException("User can not be empty.")));
 
-        if(updateUser.isPresent() && userRepository.existsByLogin(login))
-        {
-            Optional<UsersEntity> userToUpdate =Optional.ofNullable(userRepository.findByLogin(login));
-            if(userToUpdate.isPresent())
-            {
-                if(!userRepository.existsByLogin(updateUser.get().getLogin()))
-                    userToUpdate.get().setLogin(updateUser.get().getLogin());
+        Optional<UsersEntity> userToUpdate = Optional.ofNullable(Optional.ofNullable(userRepository.findByLogin(login))
+                .orElseThrow(() -> new ApiRequestException("User to update does not exists")));
 
-                userToUpdate.get().setEmail(updateUser.get().getEmail());
-                userToUpdate.get().setFirstname(updateUser.get().getFirstname());
-                userToUpdate.get().setLastname(updateUser.get().getLastname());
-                userToUpdate.get().setPassword(updateUser.get().getPassword());
-                userToUpdate.get().setSex(updateUser.get().getSex());
-                userToUpdate.get().setStatus(updateUser.get().getStatus());
+        if(userRepository.existsByLogin(login))
+            userToUpdate.get().setLogin(updateUser.get().getLogin());
 
-                Optional<AddressRestModel> updateAddress = Optional.ofNullable(updateUser.get().getAddressRestModel());
+        userToUpdate.get().setEmail(updateUser.get().getEmail());
+        userToUpdate.get().setFirstname(updateUser.get().getFirstname());
+        userToUpdate.get().setLastname(updateUser.get().getLastname());
+        userToUpdate.get().setPassword(updateUser.get().getPassword());
+        userToUpdate.get().setSex(updateUser.get().getSex());
+        userToUpdate.get().setStatus(updateUser.get().getStatus());
+
+        Optional<AddressRestModel> updateAddress = Optional.ofNullable(updateUser.get().getAddressRestModel());
                 AddressesEntity updateUserAddress;
                 if(updateAddress.isPresent())
                 {
@@ -84,31 +85,24 @@ public class UserService {
                     updateUserAddress = userToUpdate.get().getAddressesEntity();
                 }
 
+
                 return new UserRestModel(userRepository.save(userToUpdate.get()));
 
-            } else
-                return null;
-
-
-        } else
-            return null;
     }
 
-    public Boolean deleteByLogin(final String login){
-        if(userRepository.existsByLogin(login)){
+    public void deleteByLogin(final String login) {
+        if (userRepository.existsByLogin(login))
             userRepository.deleteByLogin(login);
-            return Boolean.TRUE;
-        }
         else
-            return Boolean.FALSE;
+            throw new ApiNotFoundException(String.format("User by login: %s does not exists", login));
     }
 
     public UserRestModel getByLogin(final String login) {
 
-        Optional<UsersEntity> user = Optional.ofNullable(userRepository.findByLogin(login));
-        if(user.isPresent())
+        Optional<UsersEntity> user = Optional.ofNullable(Optional.ofNullable(userRepository.findByLogin(login))
+                .orElseThrow(() -> new ApiNotFoundException(String.format("User %s was not found.", login))));
+
         return new UserRestModel(user.get());
-        return null;
     }
 
 
