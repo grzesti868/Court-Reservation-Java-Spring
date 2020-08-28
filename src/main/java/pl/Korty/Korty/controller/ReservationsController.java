@@ -1,6 +1,5 @@
 package pl.Korty.Korty.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +7,6 @@ import pl.Korty.Korty.model.responses.ReservationRestModel;
 import pl.Korty.Korty.model.services.ReservationService;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -35,54 +33,37 @@ public class ReservationsController {
     @GetMapping("byUser/{login}")
     @PreAuthorize("hasAuthority('reservation:read') or #login == authentication.name")
     public ResponseEntity<List<ReservationRestModel>> listAllReservationsByUserLogin(@PathVariable final String login){
-        Optional<List<ReservationRestModel>> reservationList = Optional.ofNullable(reservationService.getAllByUserLogin(login));
-        return reservationList.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(reservationService.getAllByUserLogin(login));
     }
 
 
     @GetMapping("byCourt/{courtId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ReservationRestModel>> getAllReservationByCourtId(@PathVariable final Long courtId){
-       Optional<List<ReservationRestModel>> reservationList = Optional.ofNullable(reservationService.getAllByCourtId(courtId));
-        return reservationList.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(reservationService.getAllByCourtId(courtId));
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasAuthority('reservation:read')")
     public ResponseEntity<ReservationRestModel> getReservationById(@PathVariable final Long id){
-        Optional<ReservationRestModel> reservation = Optional.ofNullable(reservationService.getById(id));
-        return reservation.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(reservationService.getById(id));
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addReservation(@RequestBody final ReservationRestModel reservation) {
-        Long reservationsId = reservationService.add(reservation);
-        if(reservationsId > 0)
-            return ResponseEntity.ok("Reservation has been added, Id: "+reservationsId);
-        else if(reservationsId.equals(-1L))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reservation is empty");
-        else if(reservationsId.equals(-2L))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty id court.");
-        else if(reservationsId.equals(-3L))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User was not specified");
-        else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong reservation details (wrong user's info or period of time).");
+            return ResponseEntity.ok("Reservation has been added, Id: "+reservationService.add(reservation));
     }
 
     @PutMapping("{id}")
     @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
     public ResponseEntity<ReservationRestModel> updateReservationById(@PathVariable final Long id,@RequestBody final ReservationRestModel reservation){
-        Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(reservationService.update(id,reservation));
-        return reservationRestModel.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
+        return ResponseEntity.ok(reservationService.update(id,reservation));
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
     public ResponseEntity<String> deleteReservationById(@PathVariable final Long id){
-        Boolean isDeleted =  reservationService.deleteById(id);
-        if(isDeleted)
-            return ResponseEntity.status(HttpStatus.OK).body("Reservation has been deleted.");
-        else
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid reservation's id.");
+        reservationService.deleteById(id);
+        return ResponseEntity.ok("Reservations has been deleted");
     }
 }

@@ -1,6 +1,8 @@
 package pl.Korty.Korty.model.services;
 
 import org.springframework.stereotype.Service;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
@@ -39,82 +41,86 @@ public class ReservationService {
     }
 
     public List<ReservationRestModel> getAllByUserLogin(final String login){
-        if(userRepository.existsByLogin(login))
+
+
+        if(!userRepository.existsByLogin(login))
+            throw new ApiNotFoundException(String.format("No user found by %s login",login));
+
         return reservationRepository.findAllByReservationUserLogin(login).stream()
                 .map(ReservationRestModel::new)
                 .collect(Collectors.toList());
-        else
-            return null;
+
     }
 
     public List<ReservationRestModel> getAllByCourtId(final Long id){
-        if(squash_courtsRepository.existsById(id))
+
+        if(!squash_courtsRepository.existsById(id))
+            throw new ApiNotFoundException(String.format("No court found by id: %d",id));
+
         return reservationRepository.findAllByReservationSquashCourtId(id).stream()
                 .map(ReservationRestModel::new)
                 .collect(Collectors.toList());
-        else
-            return null;
     }
 
     public Long add(final ReservationRestModel reservationRestModel) {
-        Optional<ReservationRestModel> reservationToAdd = Optional.ofNullable(reservationRestModel);
-        if(reservationToAdd.isEmpty()) {
-            return -1L; //reservation is empty
-        } else {
-            if(!squash_courtsRepository.existsById(reservationToAdd.get().getCourtId())) {
-                return -2L; //no id court
-            } else {
-                Optional<UserRestModel> reservationUser = Optional.ofNullable(reservationToAdd.get().getUserRestModel());
-                Optional<String> userLogin = Optional.ofNullable(reservationToAdd.get().getUserLogin());
-                if(reservationUser.isEmpty() && userLogin.isEmpty()){
-                    return -3L; //no new or old user found
-                } else {
-                    Optional<ReservationsEntity> mappedReservation = Optional.ofNullable(mapReservationRestModel(reservationToAdd.get()));
-                    if(mappedReservation.isEmpty()){
-                        return -4L; //wrong users info or invalid period of time
-                    } else {
-                        return reservationRepository.save(mappedReservation.get()).getId();
-                    }
-                }
-            }
-        }
+
+        Optional<ReservationRestModel> reservationToAdd = Optional.ofNullable(Optional.ofNullable(reservationRestModel)
+                .orElseThrow(() -> new ApiRequestException("New reservation can not be empty")));
+
+
+        if(!squash_courtsRepository.existsById(reservationToAdd.get().getCourtId()))
+                throw new ApiRequestException("No court found by this id");
+
+        Optional<UserRestModel> reservationUser = Optional.ofNullable(reservationToAdd.get().getUserRestModel());
+        Optional<String> userLogin = Optional.ofNullable(reservationToAdd.get().getUserLogin());
+
+        if(reservationUser.isEmpty() && userLogin.isEmpty())
+            throw new ApiRequestException("No information about user.");
+
+        Optional<ReservationsEntity> mappedReservation = Optional.ofNullable(mapReservationRestModel(reservationToAdd.get()));
+
+        if(mappedReservation.isEmpty())
+            throw new ApiRequestException("Wrong user's information or invalid period of time");
+
+        return reservationRepository.save(mappedReservation.get()).getId();
+
     }
 
     public ReservationRestModel update(final Long id, ReservationRestModel reservation)
     {
-        Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(reservation);
-        if(reservationRepository.existsById(id) && reservationRestModel.isPresent()){
-            Optional <ReservationsEntity> reservationToUpdate = reservationRepository.findById(id);
-
-            if(isTimeValid(reservation.getStart_date(),reservation.getEnd_date(),reservation.getCourtId()))
-            {
-                reservationToUpdate.get().setStart_date(reservationRestModel.get().getStart_date());
-                reservationToUpdate.get().setEnd_date(reservationRestModel.get().getEnd_date());
-            }
-            reservationToUpdate.get().setPeople_num(reservationRestModel.get().getPeople_num());
-            reservationToUpdate.get().setAdditional_info(reservationRestModel.get().getAdditional_info());
+        Optional<ReservationRestModel> reservationRestModel = Optional.ofNullable(Optional.ofNullable(reservation)
+                .orElseThrow(() -> new ApiRequestException("Updated reservation can not be null")));
 
 
-            return new ReservationRestModel(reservationRepository.save(reservationToUpdate.get()));
-        }
-        else
-            return null;
+        Optional <ReservationsEntity> reservationToUpdate = Optional.ofNullable(reservationRepository.findById(id)
+                .orElseThrow(() -> new ApiNotFoundException("Reservation to update does not exists")));
+
+        if(!isTimeValid(reservation.getStart_date(),reservation.getEnd_date(),reservation.getCourtId()))
+                throw new ApiRequestException("No available courts in this period of time.");
+
+        reservationToUpdate.get().setStart_date(reservationRestModel.get().getStart_date());
+        reservationToUpdate.get().setEnd_date(reservationRestModel.get().getEnd_date());
+
+        reservationToUpdate.get().setPeople_num(reservationRestModel.get().getPeople_num());
+        reservationToUpdate.get().setAdditional_info(reservationRestModel.get().getAdditional_info());
+
+
+        return new ReservationRestModel(reservationRepository.save(reservationToUpdate.get()));
     }
 
-    public Boolean deleteById(final long id){
-        if(reservationRepository.existsById(id)) {
+    public void deleteById(final long id){
+        if(reservationRepository.existsById(id))
             reservationRepository.deleteById(id);
-            return Boolean.TRUE;
-        }
         else
-            return  Boolean.FALSE;
+            throw new ApiNotFoundException(String.format("Reservation by id %d does not exists",id));
     }
 
     public ReservationRestModel getById(final Long id) {
-        if(reservationRepository.existsById(id))
-        return new ReservationRestModel(reservationRepository.getOne(id));
-        else
-            return null;
+
+        Optional<ReservationsEntity> reservation = reservationRepository.findById(id);
+
+        return reservation.map(ReservationRestModel::new)
+                .orElseThrow(() -> new ApiNotFoundException(String.format("Reservation by id %d does not exists",id)));
     }
 
     private ReservationsEntity mapReservationRestModel(final ReservationRestModel model) {

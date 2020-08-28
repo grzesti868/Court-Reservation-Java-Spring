@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import pl.Korty.Korty.exception.ApiNotFoundException;
+import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
 import pl.Korty.Korty.model.repositories.AddressRepository;
@@ -28,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
@@ -186,32 +188,32 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void findAllUserReservation_findReservationsByInvalidCourtId_returnNull() {
-        assertNull(reservationService.getAllByCourtId(1L));
+    void findAllUserReservation_findReservationsByInvalidCourtId_throwException() {
+        assertThrows(ApiNotFoundException.class, ()->reservationService.getAllByCourtId(1L));
     }
 
     @Test
-    void findAllCourtReservation_findCourtsByInvalidUsersId_returnNull() {
-        assertNull(reservationService.getAllByUserLogin("greeg"));
+    void findAllCourtReservation_findCourtsByInvalidUsersId_throwException() {
+        assertThrows(ApiNotFoundException.class,()->reservationService.getAllByUserLogin("greeg"));
     }
 
     @Test
-    void updateReservation_updateReservationByInvalidId_returnNull() {
-        assertNull(reservationService.update(2L,reservationRestModelMock));
+    void updateReservation_updateReservationByInvalidId_throwException() {
+        assertThrows(ApiNotFoundException.class,()->reservationService.update(2L,reservationRestModelMock));
     }
 
     @Test
-    void deleteUser_deleteUserByInvalidId_returnFalse() {
-        assertEquals(false,reservationService.deleteById(1L));
+    void deleteUser_deleteUserByInvalidId_throwException() {
+        assertThrows(ApiNotFoundException.class,()->reservationService.deleteById(1L));
     }
 
     @Test
-    void getReservationById_getReservationByInvalidId_returnNull() {
-        assertNull(reservationService.getById(2L));
+    void getReservationById_getReservationByInvalidId_throwException() {
+        assertThrows(ApiNotFoundException.class,()->reservationService.getById(2L));
     }
 
     @Test
-    void addReservation_addReservationWithInvalidCourtId_refuseToAdd() throws ParseException {
+    void addReservation_addReservationWithInvalidCourtId_throwException() throws ParseException {
         final AddressRestModel courtAddress = new AddressRestModel("COURTnameStreet",1,2,"COURTnameCity","44-100","nameCountry");
         final Squash_CourtRestModel court = new Squash_CourtRestModel(courtAddress,5);
         Long courtId = squash_courtService.add(court);
@@ -231,13 +233,12 @@ public class ReservationServiceTest {
         Date endDate = format.parse(stringEndDate);
         final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId+1,user.getLogin(),null);
 
-        Long reservationId = reservationService.add(reservation);
-        assertEquals(-2L,reservationId);
+        assertThrows(ApiRequestException.class,()->reservationService.add(reservation));
 
     }
 
     @Test
-    void addReservation_addReservationWithEmptyUser_refuseToAdd() throws ParseException {
+    void addReservation_addReservationWithEmptyUser_throwException() throws ParseException {
         final AddressRestModel courtAddress = new AddressRestModel("COURTnameStreet",1,2,"COURTnameCity","44-100","nameCountry");
         final Squash_CourtRestModel court = new Squash_CourtRestModel(courtAddress,5);
         Long courtId = squash_courtService.add(court);
@@ -252,13 +253,13 @@ public class ReservationServiceTest {
         Date endDate = format.parse(stringEndDate);
         final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId, null ,null);
 
-        Long reservationId = reservationService.add(reservation);
-        assertEquals(-3L,reservationId);
+
+        assertThrows(ApiRequestException.class,()->reservationService.add(reservation));
 
     }
 
     @Test
-    void addReservation_addReservationWithEmptyUserAddress_refuseToAdd() throws ParseException {
+    void addReservation_addReservationWithEmptyUserAddress_throwException() throws ParseException {
         final AddressRestModel courtAddress = new AddressRestModel("COURTnameStreet",1,2,"COURTnameCity","44-100","nameCountry");
         final Squash_CourtRestModel court = new Squash_CourtRestModel(courtAddress,5);
         Long courtId = squash_courtService.add(court);
@@ -275,43 +276,11 @@ public class ReservationServiceTest {
         Date endDate = format.parse(stringEndDate);
         final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
 
-        Long reservationId = reservationService.add(reservation);
-        assertEquals(-4L,reservationId);
-        assertEquals(0,userRepository.count());
-        assertEquals(0,reservationRepository.count());
+        assertThrows(ApiRequestException.class,()->reservationService.add(reservation));
+
 
 
     }
-
-    /*@Test
-    @Transactional
-    void testOfDateValid() throws ParseException {
-        final AddressRestModel courtAddress = new AddressRestModel("COURTnameStreet",1,2,"COURTnameCity","44-100","nameCountry");
-        final Squash_CourtRestModel court = new Squash_CourtRestModel(courtAddress,5);
-        Long courtId = squash_courtService.add(court);
-        assertEquals(1,squash_courtsRepository.count());
-
-        final AddressRestModel userAddress = new AddressRestModel("nameStreet",1,2,"nameCity","44-100","nameCountry");
-        final UserRestModel user = new UserRestModel("gregvader","admin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, userAddress,null);
-
-        String stringStartDate = "2020-09-20 10:30:00";
-        String stringEndDate = "2020-09-20 12:30:00";
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date startDate = format.parse(stringStartDate);
-        Date endDate = format.parse(stringEndDate);
-        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,null,user);
-
-        reservationService.add(reservation);
-        assertEquals(1,reservationRepository.count());
-        assertEquals(2,addressRepository.count());
-        assertEquals(1,userRepository.count());
-
-        String stringStartDate1 = "2020-09-20 12:30:00";
-        String stringEndDate1 = "2020-09-20 13:30:00";
-        Date startDate1 = format.parse(stringStartDate1);
-        Date endDate1 = format.parse(stringEndDate1);
-        assertEquals(Boolean.TRUE,reservationService.isTimeValid(startDate1,endDate1,courtId));
-    }*/
 
 
     @Test
