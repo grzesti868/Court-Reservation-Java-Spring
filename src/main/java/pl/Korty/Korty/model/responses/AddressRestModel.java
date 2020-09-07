@@ -36,9 +36,4 @@ public class AddressRestModel {
         this.postal_code = entity.getPostal_code();
         this.country = entity.getCountry();
     }
-
-
-
-
-
 }

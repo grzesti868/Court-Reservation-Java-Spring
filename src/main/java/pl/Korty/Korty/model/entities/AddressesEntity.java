@@ -42,6 +42,4 @@ public class AddressesEntity {
         this.postal_code = postal_code;
         this.country = country;
     }
-
-
 }
