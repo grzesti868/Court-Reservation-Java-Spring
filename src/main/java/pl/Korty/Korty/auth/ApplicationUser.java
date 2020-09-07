@@ -10,7 +10,7 @@ public class ApplicationUser implements UserDetails {
     private final Set<? extends GrantedAuthority> grantedAuthorities;
     private final String password;
     private final String login;
-    private final Long id; //todo: how to get id
+    private final Long id;
     private final boolean isAccountNonExpired;
     private final boolean isAccountNonLocked;
     private final boolean isCredentialsNonExpired;
@@ -65,5 +65,19 @@ public class ApplicationUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    @Override
+    public String toString() {
+        return "ApplicationUser{" +
+                "grantedAuthorities=" + grantedAuthorities +
+                ", password='" + password + '\'' +
+                ", login='" + login + '\'' +
+                ", id=" + id +
+                ", isAccountNonExpired=" + isAccountNonExpired +
+                ", isAccountNonLocked=" + isAccountNonLocked +
+                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
+                ", isEnabled=" + isEnabled +
+                '}';
     }
 }

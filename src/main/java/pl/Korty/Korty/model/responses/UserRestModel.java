@@ -1,15 +1,22 @@
 package pl.Korty.Korty.model.responses;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Getter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class UserRestModel {
 
     private String login;
@@ -34,9 +41,6 @@ public class UserRestModel {
         this.reservationRestModels = reservationRestModels;
     }
 
-    public UserRestModel() {
-    }
-
     public UserRestModel(final UsersEntity entity) {
         Optional<List<ReservationsEntity>> hasReservations = Optional.ofNullable(entity.getReservationsEntity());
          this.login = entity.getLogin();
@@ -50,74 +54,4 @@ public class UserRestModel {
         if(hasReservations.isPresent()) { this.reservationRestModels = entity.getReservationsEntity().stream().map(ReservationRestModel::new).collect(Collectors.toList()); }
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public SexEnum getSex() {
-        return sex;
-    }
-
-    public StatusEnum getStatus() {
-        return status;
-    }
-
-    public AddressRestModel getAddressRestModel() {
-        return addressRestModel;
-    }
-
-    public List<ReservationRestModel> getReservationRestModels() {
-        return reservationRestModels;
-    }
-
-    @Override
-    public String toString() {
-        return "UserRestModel{" +
-                "login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", sex=" + sex +
-                ", status=" + status +
-                ", addressRestModel=" + addressRestModel +
-                ", reservationRestModels=" + reservationRestModels +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserRestModel)) return false;
-        UserRestModel that = (UserRestModel) o;
-        return getLogin().equals(that.getLogin()) &&
-                getPassword().equals(that.getPassword()) &&
-                getEmail().equals(that.getEmail()) &&
-                getFirstname().equals(that.getFirstname()) &&
-                getLastname().equals(that.getLastname()) &&
-                getSex() == that.getSex() &&
-                getStatus() == that.getStatus() &&
-                Objects.equals(getAddressRestModel(), that.getAddressRestModel());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getLogin(), getPassword(), getEmail(), getFirstname(), getLastname(), getSex(), getStatus(), getAddressRestModel());
-    }
 }

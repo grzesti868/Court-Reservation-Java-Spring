@@ -1,9 +1,15 @@
 package pl.Korty.Korty.model.responses;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 
-import java.util.Objects;
-
+@Getter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class AddressRestModel {
 
     private String street;
@@ -22,8 +28,6 @@ public class AddressRestModel {
         this.country = country;
     }
 
-    public AddressRestModel() {
-    }
     public AddressRestModel(final AddressesEntity entity) {
         this.street = entity.getStreet();
         this.building_num = entity.getBuilding_num();
@@ -34,57 +38,7 @@ public class AddressRestModel {
     }
 
 
-    public String getStreet() {
-        return street;
-    }
 
-    public Integer getBuilding_num() {
-        return building_num;
-    }
 
-    public Integer getApartment_num() {
-        return apartment_num;
-    }
 
-    public String getCity() {
-        return city;
-    }
-
-    public String getPostal_code() {
-        return postal_code;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    @Override
-    public String toString() {
-        return "AddressRestModel{" +
-                "street='" + street + '\'' +
-                ", building_num=" + building_num +
-                ", apartment_num=" + apartment_num +
-                ", city='" + city + '\'' +
-                ", postal_code='" + postal_code + '\'' +
-                ", country='" + country + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AddressRestModel)) return false;
-        AddressRestModel that = (AddressRestModel) o;
-        return Objects.equals(getStreet(), that.getStreet()) &&
-                Objects.equals(getBuilding_num(), that.getBuilding_num()) &&
-                Objects.equals(getApartment_num(), that.getApartment_num()) &&
-                Objects.equals(getCity(), that.getCity()) &&
-                Objects.equals(getPostal_code(), that.getPostal_code()) &&
-                Objects.equals(getCountry(), that.getCountry());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStreet(), getBuilding_num(), getApartment_num(), getCity(), getPostal_code(), getCountry());
-    }
 }

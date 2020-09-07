@@ -7,11 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import pl.Korty.Korty.exception.ApiNotFoundException;
 import pl.Korty.Korty.exception.ApiRequestException;
-import pl.Korty.Korty.model.repositories.AddressRepository;
-import pl.Korty.Korty.model.repositories.Squash_CourtsRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
-import pl.Korty.Korty.model.services.Squash_CourtService;
+import pl.Korty.Korty.repositories.AddressRepository;
+import pl.Korty.Korty.repositories.Squash_CourtsRepository;
+import pl.Korty.Korty.services.Squash_CourtService;
 
 import javax.transaction.Transactional;
 

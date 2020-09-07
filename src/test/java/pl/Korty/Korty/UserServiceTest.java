@@ -9,11 +9,11 @@ import pl.Korty.Korty.exception.ApiNotFoundException;
 import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.enums.SexEnum;
 import pl.Korty.Korty.model.enums.StatusEnum;
-import pl.Korty.Korty.model.repositories.AddressRepository;
-import pl.Korty.Korty.model.repositories.UserRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.responses.UserRestModel;
-import pl.Korty.Korty.model.services.UserService;
+import pl.Korty.Korty.repositories.AddressRepository;
+import pl.Korty.Korty.repositories.UserRepository;
+import pl.Korty.Korty.services.UserService;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;

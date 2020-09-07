@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.Squash_CourtRestModel;
-import pl.Korty.Korty.model.services.Squash_CourtService;
+import pl.Korty.Korty.services.Squash_CourtService;
 
 import java.util.List;
 

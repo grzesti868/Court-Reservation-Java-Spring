@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.UserRestModel;
-import pl.Korty.Korty.model.services.UserService;
+import pl.Korty.Korty.services.UserService;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("users")
-public class UsersController { //todo: make test
+public class UsersController {
 
     private final UserService userService;
 

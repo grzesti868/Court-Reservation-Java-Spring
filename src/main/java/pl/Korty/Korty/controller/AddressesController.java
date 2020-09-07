@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.AddressRestModel;
-import pl.Korty.Korty.model.services.AddressService;
+import pl.Korty.Korty.services.AddressService;
 
 import java.util.List;
 

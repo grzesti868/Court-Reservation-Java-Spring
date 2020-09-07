@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.Korty.Korty.model.responses.ReservationRestModel;
-import pl.Korty.Korty.model.services.ReservationService;
+import pl.Korty.Korty.services.ReservationService;
 
 import java.util.List;
 
@@ -55,15 +55,16 @@ public class ReservationsController {
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
+    @PreAuthorize("hasAuthority('reservation:write')")
     public ResponseEntity<ReservationRestModel> updateReservationById(@PathVariable final Long id,@RequestBody final ReservationRestModel reservation){
         return ResponseEntity.ok(reservationService.update(id,reservation));
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAuthority('reservation:write')") //todo: guest can only by reservationId which he posses
+    @PreAuthorize("hasAuthority('reservation:write')")
     public ResponseEntity<String> deleteReservationById(@PathVariable final Long id){
         reservationService.deleteById(id);
         return ResponseEntity.ok("Reservations has been deleted");
     }
+
 }

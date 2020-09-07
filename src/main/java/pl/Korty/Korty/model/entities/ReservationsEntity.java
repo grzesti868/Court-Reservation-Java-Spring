@@ -1,9 +1,14 @@
 package pl.Korty.Korty.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "reservations")
 public class ReservationsEntity {
@@ -12,18 +17,18 @@ public class ReservationsEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column
+    @Column(name = "start_date",nullable = false)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date start_date;
 
-    @Column
+    @Column(name = "end_date",nullable = false)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date end_date;
 
-    @Column
+    @Column(name = "people_num")
     private Integer people_num;
 
-    @Column
+    @Column(name = "additional_info")
     private String additional_info;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
@@ -42,69 +47,4 @@ public class ReservationsEntity {
         this.additional_info = additional_info;
     }
 
-    public ReservationsEntity() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Date getStart_date() {
-        return start_date;
-    }
-
-    public Date getEnd_date() {
-        return end_date;
-    }
-
-    public Integer getPeople_num() {
-        return people_num;
-    }
-
-    public String getAdditional_info() {
-        return additional_info;
-    }
-
-    public Squash_CourtsEntity getReservationSquashCourt() { return reservationSquashCourt; }
-
-    public UsersEntity getReservationUser() {
-        return reservationUser;
-    }
-
-    public void setStart_date(Date start_date) {
-        this.start_date = start_date;
-    }
-
-    public void setEnd_date(Date end_date) {
-        this.end_date = end_date;
-    }
-
-    public void setPeople_num(Integer people_num) {
-        this.people_num = people_num;
-    }
-
-    public void setAdditional_info(String additional_info) {
-        this.additional_info = additional_info;
-    }
-
-    public void setReservationSquashCourt(Squash_CourtsEntity reservationSquashCourt) {
-        this.reservationSquashCourt = reservationSquashCourt;
-    }
-
-    public void setReservationUser(UsersEntity reservationUser) {
-        this.reservationUser = reservationUser;
-    }
-
-    @Override
-    public String toString() {
-        return "ReservationsEntity{" +
-                "id=" + id +
-                ", start_date=" + start_date +
-                ", end_date=" + end_date +
-                ", people_num=" + people_num +
-                ", additional_info='" + additional_info + '\'' +
-                ", reservationSquashCourt=" + reservationSquashCourt +
-                ", reservationUser=" + reservationUser +
-                '}';
-    }
 }

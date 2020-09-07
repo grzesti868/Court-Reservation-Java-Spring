@@ -1,11 +1,11 @@
-package pl.Korty.Korty.model.services;
+package pl.Korty.Korty.services;
 
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.exception.ApiNotFoundException;
 import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.entities.AddressesEntity;
-import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
+import pl.Korty.Korty.repositories.AddressRepository;
 
 import java.util.List;
 import java.util.Optional;

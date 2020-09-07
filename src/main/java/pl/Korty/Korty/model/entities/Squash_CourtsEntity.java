@@ -1,6 +1,12 @@
 package pl.Korty.Korty.model.entities;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+
+@Data
+@NoArgsConstructor
 
 @Entity
 @Table(name = "squash_courts")
@@ -13,42 +19,13 @@ public class Squash_CourtsEntity {
    @JoinColumn(name ="id_address",referencedColumnName = "id")
    private AddressesEntity squashCourtAddress;
 
-    @Column
+    @Column(name = "fields_num")
     private Integer fields_num;
 
-    public Squash_CourtsEntity() {
 
-    }
     public Squash_CourtsEntity(Integer fields_num) {
         this.fields_num = fields_num;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public AddressesEntity getSquashCourtAddress() {
-        return squashCourtAddress;
-    }
-
-    public Integer getFields_num() {
-        return fields_num;
-    }
-
-    public void setSquashCourtAddress(AddressesEntity squashCourtAddress) {
-        this.squashCourtAddress = squashCourtAddress;
-    }
-
-    public void setFields_num(Integer fields_num) {
-        this.fields_num = fields_num;
-    }
-
-    @Override
-    public String toString() {
-        return "Squash_CourtsEntity{" +
-                "id=" + id +
-                ", squashCourtAddress=" + squashCourtAddress +
-                ", fields_num=" + fields_num +
-                '}';
-    }
 }

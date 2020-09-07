@@ -1,6 +1,12 @@
 package pl.Korty.Korty.model.entities;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+
+@NoArgsConstructor
+@Data
 
 @Entity
 @Table(name = "addresses")
@@ -9,26 +15,24 @@ public class AddressesEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column
+    @Column(name = "street")
     private String street;
 
-    @Column
+    @Column(name = "building_num")
     private Integer building_num;
 
-    @Column
+    @Column(name = "apartment_num")
     private Integer apartment_num;
 
-    @Column
+    @Column(name = "city")
     private String city;
 
-    @Column
+    @Column(name = "postal_code")
     private String postal_code;
 
-    @Column
+    @Column(name = "country")
     private String country;
 
-    public AddressesEntity() {
-    }
 
     public AddressesEntity(String street, Integer building_num, Integer apartment_num, String city, String postal_code, String country) {
         this.street = street;
@@ -39,70 +43,5 @@ public class AddressesEntity {
         this.country = country;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public Integer getBuilding_num() {
-        return building_num;
-    }
-
-    public Integer getApartment_num() {
-        return apartment_num;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getPostal_code() {
-        return postal_code;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public void setBuilding_num(Integer building_num) {
-        this.building_num = building_num;
-    }
-
-    public void setApartment_num(Integer apartment_num) {
-        this.apartment_num = apartment_num;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setPostal_code(String postal_code) {
-        this.postal_code = postal_code;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    @Override
-    public String toString() {
-        return "AddressesEntity{" +
-                "id=" + id +
-                ", street='" + street + '\'' +
-                ", building_num=" + building_num +
-                ", apartment_num=" + apartment_num +
-                ", city='" + city + '\'' +
-                ", postal_code='" + postal_code + '\'' +
-                ", country='" + country + '\'' +
-                '}';
-    }
 
 }

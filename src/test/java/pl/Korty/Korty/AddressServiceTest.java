@@ -8,9 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import pl.Korty.Korty.exception.ApiNotFoundException;
 import pl.Korty.Korty.exception.ApiRequestException;
-import pl.Korty.Korty.model.repositories.AddressRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
-import pl.Korty.Korty.model.services.AddressService;
+import pl.Korty.Korty.repositories.AddressRepository;
+import pl.Korty.Korty.services.AddressService;
 
 import javax.transaction.Transactional;
 import java.util.List;

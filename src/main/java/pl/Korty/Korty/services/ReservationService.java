@@ -1,4 +1,4 @@
-package pl.Korty.Korty.model.services;
+package pl.Korty.Korty.services;
 
 import org.springframework.stereotype.Service;
 import pl.Korty.Korty.exception.ApiNotFoundException;
@@ -6,12 +6,12 @@ import pl.Korty.Korty.exception.ApiRequestException;
 import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.ReservationsEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
-import pl.Korty.Korty.model.repositories.ReservationRepository;
-import pl.Korty.Korty.model.repositories.Squash_CourtsRepository;
-import pl.Korty.Korty.model.repositories.UserRepository;
 import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.responses.ReservationRestModel;
 import pl.Korty.Korty.model.responses.UserRestModel;
+import pl.Korty.Korty.repositories.ReservationRepository;
+import pl.Korty.Korty.repositories.Squash_CourtsRepository;
+import pl.Korty.Korty.repositories.UserRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -115,6 +115,11 @@ public class ReservationService {
             throw new ApiNotFoundException(String.format("Reservation by id %d does not exists",id));
     }
 
+    //todo: implement
+    public void deleteUserReservations(String login) {
+
+    }
+
     public ReservationRestModel getById(final Long id) {
 
         Optional<ReservationsEntity> reservation = reservationRepository.findById(id);
@@ -184,4 +189,6 @@ public class ReservationService {
         }
 
     }
+
+
 }
