@@ -25,16 +25,16 @@ public class ReservationRestModel {
     private String additional_info;
     private Long courtId;
 
-    private String userLogin;
+    private String userUsername;
     private UserRestModel userRestModel;
 
-    public ReservationRestModel(Date start_date, Date end_date, Integer people_num, String additional_info, Long courtId,String userLogin, UserRestModel userRestModel) {
+    public ReservationRestModel(Date start_date, Date end_date, Integer people_num, String additional_info, Long courtId,String userUsername, UserRestModel userRestModel) {
         this.start_date = start_date;
         this.end_date = end_date;
         this.people_num = people_num;
         this.additional_info = additional_info;
         this.courtId = courtId;
-        this.userLogin = userLogin;
+        this.userUsername = userUsername;
         this.userRestModel = userRestModel;
     }
 
@@ -44,7 +44,6 @@ public class ReservationRestModel {
         this.people_num = entity.getPeople_num();
         this.additional_info = entity.getAdditional_info();
         this.courtId = entity.getReservationSquashCourt().getId();
-        this.userLogin = entity.getReservationUser().getLogin();
-        //this.userRestModel = new UserRestModel(entity.getReservationUser());
+        this.userUsername = entity.getReservationUser().getUsername();
     }
 }

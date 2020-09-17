@@ -30,10 +30,10 @@ public class ReservationsController {
         return ResponseEntity.ok(reservationsList);
     }
 
-    @GetMapping("byUser/{login}")
-    @PreAuthorize("hasAuthority('reservation:read') or #login == authentication.name")
-    public ResponseEntity<List<ReservationRestModel>> listAllReservationsByUserLogin(@PathVariable final String login){
-        return ResponseEntity.ok(reservationService.getAllByUserLogin(login));
+    @GetMapping("byUser/{username}")
+    @PreAuthorize("hasAuthority('reservation:read') or #username == authentication.name")
+    public ResponseEntity<List<ReservationRestModel>> listAllReservationsByUserUsername(@PathVariable final String username){
+        return ResponseEntity.ok(reservationService.getAllByUserUsername(username));
     }
 
 

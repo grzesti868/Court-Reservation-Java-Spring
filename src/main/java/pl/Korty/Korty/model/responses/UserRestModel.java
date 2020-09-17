@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class UserRestModel {
 
-    private String login;
+    private String username;
     private String password;
     private String email;
     private String firstname;
@@ -29,8 +29,8 @@ public class UserRestModel {
     private AddressRestModel addressRestModel;
     private List<ReservationRestModel> reservationRestModels;
 
-    public UserRestModel(String login, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status, AddressRestModel addressRestModel, List<ReservationRestModel> reservationRestModels) {
-        this.login = login;
+    public UserRestModel(String username, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status, AddressRestModel addressRestModel, List<ReservationRestModel> reservationRestModels) {
+        this.username = username;
         this.password = password;
         this.email = email;
         this.firstname = firstname;
@@ -43,7 +43,7 @@ public class UserRestModel {
 
     public UserRestModel(final UsersEntity entity) {
         Optional<List<ReservationsEntity>> hasReservations = Optional.ofNullable(entity.getReservationsEntity());
-         this.login = entity.getLogin();
+        this.username = entity.getUsername();
         this.password = entity.getPassword();
         this.email = entity.getEmail();
         this.firstname = entity.getFirstname();

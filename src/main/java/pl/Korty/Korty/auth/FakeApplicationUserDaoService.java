@@ -61,7 +61,7 @@ public class FakeApplicationUserDaoService implements  ApplicationUserDao{
 
         List<ApplicationUser> users = userRepository.findAll().stream()
                 .map(user -> new ApplicationUser(
-                        user.getLogin(),
+                        user.getUsername(),
                         passwordEncoder.encode(passwordEncoder.encode(user.getPassword())),
                         GUEST.getGrantedAuthorities(),
                         user.getId(),

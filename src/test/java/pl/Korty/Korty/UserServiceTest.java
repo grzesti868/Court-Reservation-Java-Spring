@@ -62,7 +62,7 @@ public class UserServiceTest {
         assertEquals(1, userRepository.count());
         assertEquals(1, addressRepository.count());
 
-        userService.deleteByLogin(user.getLogin());
+        userService.deleteByUsername(user.getUsername());
         assertEquals(0, userRepository.count());
         assertEquals(0, addressRepository.count());
     }
@@ -76,7 +76,7 @@ public class UserServiceTest {
         Long id = userService.add(user);
         assertEquals(1, userRepository.count());
         assertEquals(1, addressRepository.count());
-        assertEquals(user,userService.getByLogin(user.getLogin()));
+        assertEquals(user,userService.getByUsername(user.getUsername()));
     }
 
     @Test
@@ -112,8 +112,8 @@ public class UserServiceTest {
         final AddressRestModel updateAddress = new AddressRestModel("UPDATEnameStreet",1,2,"UPDATEnameCity","44-100","nameCountry");
         final UserRestModel updateUser = new UserRestModel("UPDATEgregvader","UPDATEadmin123","gregvader@gmail.com","Grzegorz","Stich", SexEnum.Male, StatusEnum.Active, address,null);
 
-        userService.update(user.getLogin(),updateUser);
-        assertEquals(updateUser,userService.getByLogin(updateUser.getLogin()));
+        userService.update(user.getUsername(),updateUser);
+        assertEquals(updateUser,userService.getByUsername(updateUser.getUsername()));
     }
 
     @Test
@@ -151,18 +151,18 @@ public class UserServiceTest {
 
         final UserRestModel updateUser = null;
 
-        assertThrows(ApiRequestException.class,()->userService.update(user.getLogin(),updateUser));
+        assertThrows(ApiRequestException.class,()->userService.update(user.getUsername(),updateUser));
     }
 
     @Test
     void deleteUser_cantFindValidUser_throwException() {
-        assertThrows(ApiNotFoundException.class, ()->userService.deleteByLogin("ogin"));
+        assertThrows(ApiNotFoundException.class, ()->userService.deleteByUsername("ogin"));
     }
 
     @Test
     void findUserById_cantFindValidUser_throwException() {
 
-        assertThrows(ApiNotFoundException.class,()->userService.getByLogin("someLogin"));
+        assertThrows(ApiNotFoundException.class,()->userService.getByUsername("someLogin"));
 
     }
 

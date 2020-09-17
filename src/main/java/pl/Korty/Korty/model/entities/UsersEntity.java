@@ -20,8 +20,8 @@ public class UsersEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false, name = "login")
-    private String login;
+    @Column(nullable = false, name = "username")
+    private String username;
 
     @Column(nullable = false, name = "password")
     private String password;
@@ -50,8 +50,8 @@ public class UsersEntity {
 
 
 
-    public UsersEntity(String login, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status) {
-        this.login = login;
+    public UsersEntity(String username, String password, String email, String firstname, String lastname, SexEnum sex, StatusEnum status) {
+        this.username = username;
         this.password = password;
         this.email = email;
         this.firstname = firstname;

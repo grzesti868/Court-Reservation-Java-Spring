@@ -113,7 +113,7 @@ public class ReservationServiceTest {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = format.parse(stringStartDate);
         Date endDate = format.parse(stringEndDate);
-        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
+        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getUsername(),null);
 
         reservationService.add(reservation);
         assertEquals(1,reservationRepository.count());
@@ -141,7 +141,7 @@ public class ReservationServiceTest {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = format.parse(stringStartDate);
         Date endDate = format.parse(stringEndDate);
-        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
+        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getUsername(),null);
 
         Long reservationId = reservationService.add(reservation);
         assertEquals(1,reservationRepository.count());
@@ -174,14 +174,14 @@ public class ReservationServiceTest {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = format.parse(stringStartDate);
         Date endDate = format.parse(stringEndDate);
-        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
+        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getUsername(),null);
 
         Long reservationId = reservationService.add(reservation);
         assertEquals(1,reservationRepository.count());
         assertEquals(2,addressRepository.count());
         assertEquals(1,userRepository.count());
 
-        final ReservationRestModel updateReservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem I KOTEM",courtId,user.getLogin(),null);
+        final ReservationRestModel updateReservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem I KOTEM",courtId,user.getUsername(),null);
 
         reservationService.update(reservationId,updateReservation);
         assertEquals(updateReservation,reservationService.getById(reservationId));
@@ -194,7 +194,7 @@ public class ReservationServiceTest {
 
     @Test
     void findAllCourtReservation_findCourtsByInvalidUsersId_throwException() {
-        assertThrows(ApiNotFoundException.class,()->reservationService.getAllByUserLogin("greeg"));
+        assertThrows(ApiNotFoundException.class,()->reservationService.getAllByUserUsername("greeg"));
     }
 
     @Test
@@ -203,7 +203,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void deleteUser_deleteUserByInvalidId_throwException() {
+    void deleteReservation_deleteUserByInvalidId_throwException() {
         assertThrows(ApiNotFoundException.class,()->reservationService.deleteById(1L));
     }
 
@@ -231,7 +231,7 @@ public class ReservationServiceTest {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = format.parse(stringStartDate);
         Date endDate = format.parse(stringEndDate);
-        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId+1,user.getLogin(),null);
+        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId+1,user.getUsername(),null);
 
         assertThrows(ApiRequestException.class,()->reservationService.add(reservation));
 
@@ -274,7 +274,7 @@ public class ReservationServiceTest {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = format.parse(stringStartDate);
         Date endDate = format.parse(stringEndDate);
-        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
+        final ReservationRestModel reservation = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getUsername(),null);
 
         assertThrows(ApiRequestException.class,()->reservationService.add(reservation));
 
@@ -311,7 +311,7 @@ public class ReservationServiceTest {
         DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate1 = format.parse(stringStartDate);
         Date endDate1 = format.parse(stringEndDate);
-        final ReservationRestModel reservation1 = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getLogin(),null);
+        final ReservationRestModel reservation1 = new ReservationRestModel(startDate,endDate,2,"Bede z psem",courtId,user.getUsername(),null);
         reservationService.add(reservation1);
 
         assertEquals(2, reservationRepository.count());

@@ -40,13 +40,13 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationRestModel> getAllByUserLogin(final String login){
+    public List<ReservationRestModel> getAllByUserUsername(final String username){
 
 
-        if(!userRepository.existsByLogin(login))
-            throw new ApiNotFoundException(String.format("No user found by %s login",login));
+        if(!userRepository.existsByUsername(username))
+            throw new ApiNotFoundException(String.format("No user found by %s username",username));
 
-        return reservationRepository.findAllByReservationUserLogin(login).stream()
+        return reservationRepository.findAllByReservationUserUsername(username).stream()
                 .map(ReservationRestModel::new)
                 .collect(Collectors.toList());
 
@@ -72,9 +72,9 @@ public class ReservationService {
                 throw new ApiRequestException("No court found by this id");
 
         Optional<UserRestModel> reservationUser = Optional.ofNullable(reservationToAdd.get().getUserRestModel());
-        Optional<String> userLogin = Optional.ofNullable(reservationToAdd.get().getUserLogin());
+        Optional<String> userUsername = Optional.ofNullable(reservationToAdd.get().getUserUsername());
 
-        if(reservationUser.isEmpty() && userLogin.isEmpty())
+        if(reservationUser.isEmpty() && userUsername.isEmpty())
             throw new ApiRequestException("No information about user.");
 
         Optional<ReservationsEntity> mappedReservation = Optional.ofNullable(mapReservationRestModel(reservationToAdd.get()));
@@ -115,11 +115,6 @@ public class ReservationService {
             throw new ApiNotFoundException(String.format("Reservation by id %d does not exists",id));
     }
 
-    //todo: implement
-    public void deleteUserReservations(String login) {
-
-    }
-
     public ReservationRestModel getById(final Long id) {
 
         Optional<ReservationsEntity> reservation = reservationRepository.findById(id);
@@ -137,7 +132,7 @@ public class ReservationService {
 
         reservationsEntity.setReservationSquashCourt(squash_courtsRepository.findById(model.getCourtId()).get());
 
-        Optional<String> reservationUser = Optional.ofNullable(model.getUserLogin());
+        Optional<String> reservationUser = Optional.ofNullable(model.getUserUsername());
         if(reservationUser.isEmpty()) {
             Optional<AddressRestModel> userAddress = Optional.ofNullable(model.getUserRestModel().getAddressRestModel());
             UsersEntity newUser = mapUserRestModel(model.getUserRestModel());
@@ -145,12 +140,12 @@ public class ReservationService {
 
                 return null; //no address id
             }
-            if(userRepository.existsByLogin(newUser.getLogin())){
+            if(userRepository.existsByUsername(newUser.getUsername())){
                 return null; //login is already existing in db
             }
             reservationsEntity.setReservationUser(newUser);
         } else {
-            Optional<UsersEntity> oldUser = Optional.ofNullable(userRepository.findByLogin(reservationUser.get()));
+            Optional<UsersEntity> oldUser = Optional.ofNullable(userRepository.findByUsername(reservationUser.get()));
             if(oldUser.isEmpty()){
                 return null; //no user find
             }
@@ -161,7 +156,7 @@ public class ReservationService {
     }
 
     private UsersEntity mapUserRestModel(final UserRestModel model){
-        UsersEntity userToAdd = new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
+        UsersEntity userToAdd = new UsersEntity(model.getUsername(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
         AddressesEntity addressOfUser = new AddressesEntity(
                 model.getAddressRestModel().getStreet(),
                 model.getAddressRestModel().getBuilding_num(),
