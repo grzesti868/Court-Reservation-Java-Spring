@@ -11,3 +11,8 @@ spring:
     console:
       enabled: true
 
+application:
+  jwt:
+    secretKey: "reallyLongAndStrongKeyUsedForSignature"
+    tokenPrefix: "Bearer "
+    tokenExpirationAfterDays: 2
