@@ -7,7 +7,7 @@ import pl.Korty.Korty.model.entities.UsersEntity;
 @Repository
 public interface UserRepository extends JpaRepository<UsersEntity,Long> {
 
-    UsersEntity findByLogin(String login);
-    boolean  existsByLogin(String login);
-    void deleteByLogin(String login);
+    UsersEntity findByUsername(String username);
+    boolean  existsByUsername(String username);
+    void deleteByUsername(String username);
 }

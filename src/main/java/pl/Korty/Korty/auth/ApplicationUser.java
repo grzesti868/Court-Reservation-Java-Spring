@@ -1,25 +1,27 @@
 package pl.Korty.Korty.auth;
 
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Set;
 
+@ToString
 public class ApplicationUser implements UserDetails {
     private final Set<? extends GrantedAuthority> grantedAuthorities;
     private final String password;
-    private final String login;
+    private final String username;
     private final Long id;
     private final boolean isAccountNonExpired;
     private final boolean isAccountNonLocked;
     private final boolean isCredentialsNonExpired;
     private final boolean isEnabled;
 
-    public ApplicationUser( String login, String password, Set<? extends GrantedAuthority> grantedAuthorities, Long id, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
+    public ApplicationUser(String username, String password, Set<? extends GrantedAuthority> grantedAuthorities, Long id, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
         this.grantedAuthorities = grantedAuthorities;
         this.password = password;
-        this.login = login;
+        this.username = username;
         this.id = id;
         this.isAccountNonExpired = isAccountNonExpired;
         this.isAccountNonLocked = isAccountNonLocked;
@@ -33,7 +35,7 @@ public class ApplicationUser implements UserDetails {
         return grantedAuthorities;
     }
 
-    public Long getId(){//?
+    public Long getId() {//?
         return id;
     }
 
@@ -44,7 +46,7 @@ public class ApplicationUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return login;
+        return username;
     }
 
     @Override
@@ -65,19 +67,5 @@ public class ApplicationUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isEnabled;
-    }
-
-    @Override
-    public String toString() {
-        return "ApplicationUser{" +
-                "grantedAuthorities=" + grantedAuthorities +
-                ", password='" + password + '\'' +
-                ", login='" + login + '\'' +
-                ", id=" + id +
-                ", isAccountNonExpired=" + isAccountNonExpired +
-                ", isAccountNonLocked=" + isAccountNonLocked +
-                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
-                ", isEnabled=" + isEnabled +
-                '}';
     }
 }

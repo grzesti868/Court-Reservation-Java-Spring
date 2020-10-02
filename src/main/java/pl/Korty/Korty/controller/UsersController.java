@@ -28,11 +28,11 @@ public class UsersController {
         return ResponseEntity.ok(userList);
     }
 
-    @GetMapping("{login}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #login == authentication.name")
-    public ResponseEntity<UserRestModel> getUserByName(@PathVariable final String login) {
+    @GetMapping("{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #username == authentication.name")
+    public ResponseEntity<UserRestModel> getUserByName(@PathVariable final String username) {
 
-        return ResponseEntity.ok(userService.getByLogin(login));
+        return ResponseEntity.ok(userService.getByUsername(username));
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
@@ -40,16 +40,16 @@ public class UsersController {
         return ResponseEntity.ok("User has been added, Id: " + userService.add(user));
     }
 
-    @PutMapping("{login}")
-    @PreAuthorize("hasAuthority('address:write') or #login == authentication.name")
-    public ResponseEntity<UserRestModel> updateUserByLogin(@PathVariable final String login,@RequestBody final UserRestModel user){
-        return ResponseEntity.ok(userService.update(login,user));
+    @PutMapping("{username}")
+    @PreAuthorize("hasAuthority('address:write') or #username == authentication.name")
+    public ResponseEntity<UserRestModel> updateUserByUsername(@PathVariable final String username,@RequestBody final UserRestModel user){
+        return ResponseEntity.ok(userService.update(username,user));
     }
 
-    @DeleteMapping("{login}")
-    @PreAuthorize("hasAuthority('address:write') or #login == authentication.name")
-    public ResponseEntity<String> deleteUserByLogin(@PathVariable final String login){
-        userService.deleteByLogin(login);
+    @DeleteMapping("{username}")
+    @PreAuthorize("hasAuthority('address:write') or #username == authentication.name")
+    public ResponseEntity<String> deleteUserByUsername(@PathVariable final String username){
+        userService.deleteByUsername(username);
         return ResponseEntity.ok("User has been deleted.");
     }
 }

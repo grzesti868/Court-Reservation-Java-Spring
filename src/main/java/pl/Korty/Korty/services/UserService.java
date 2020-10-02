@@ -7,7 +7,7 @@ import pl.Korty.Korty.model.entities.AddressesEntity;
 import pl.Korty.Korty.model.entities.UsersEntity;
 import pl.Korty.Korty.model.responses.AddressRestModel;
 import pl.Korty.Korty.model.responses.UserRestModel;
-import pl.Korty.Korty.repositories.AddressRepository;
+import pl.Korty.Korty.repositories.ReservationRepository;
 import pl.Korty.Korty.repositories.UserRepository;
 
 import java.util.List;
@@ -19,11 +19,10 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final AddressRepository addressRepository;
-
-    public UserService(UserRepository userRepository, AddressRepository addressRepository) {
+    private final ReservationRepository reservationRepository;
+    public UserService(UserRepository userRepository, ReservationRepository reservationRepository) {
         this.userRepository = userRepository;
-        this.addressRepository = addressRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<UserRestModel> getAll(){
@@ -38,8 +37,8 @@ public class UserService {
         if(newUser.isEmpty())
             throw new ApiRequestException("New user can not be empty.");
 
-        if(userRepository.existsByLogin(newUser.get().getLogin()))
-            throw new ApiRequestException("User's login already exists.");
+        if(userRepository.existsByUsername(newUser.get().getUsername()))
+            throw new ApiRequestException("User's username already exists.");
 
         Optional<AddressRestModel> hasAddress = Optional.ofNullable(newUser.get().getAddressRestModel());
 
@@ -50,16 +49,16 @@ public class UserService {
 
     }
 
-    public UserRestModel update(final String login, final UserRestModel user) {
+    public UserRestModel update(final String username, final UserRestModel user) {
 
         Optional<UserRestModel> updateUser = Optional.ofNullable(Optional.ofNullable(user)
                 .orElseThrow(() -> new ApiRequestException("User can not be empty.")));
 
-        Optional<UsersEntity> userToUpdate = Optional.ofNullable(Optional.ofNullable(userRepository.findByLogin(login))
+        Optional<UsersEntity> userToUpdate = Optional.ofNullable(Optional.ofNullable(userRepository.findByUsername(username))
                 .orElseThrow(() -> new ApiRequestException("User to update does not exists")));
 
-        if(userRepository.existsByLogin(login))
-            userToUpdate.get().setLogin(updateUser.get().getLogin());
+        if(userRepository.existsByUsername(username))
+            userToUpdate.get().setUsername(updateUser.get().getUsername());
 
         userToUpdate.get().setEmail(updateUser.get().getEmail());
         userToUpdate.get().setFirstname(updateUser.get().getFirstname());
@@ -90,24 +89,24 @@ public class UserService {
 
     }
 
-    public void deleteByLogin(final String login) {
-        if (userRepository.existsByLogin(login))
-            userRepository.deleteByLogin(login);
+    public void deleteByUsername(final String username) {
+        if (userRepository.existsByUsername(username))
+            userRepository.deleteByUsername(username);
         else
-            throw new ApiNotFoundException(String.format("User by login: %s does not exists", login));
+            throw new ApiNotFoundException(String.format("User by username: %s does not exists", username));
     }
 
-    public UserRestModel getByLogin(final String login) {
+    public UserRestModel getByUsername(final String username) {
 
-        Optional<UsersEntity> user = Optional.ofNullable(Optional.ofNullable(userRepository.findByLogin(login))
-                .orElseThrow(() -> new ApiNotFoundException(String.format("User %s was not found.", login))));
+        Optional<UsersEntity> user = Optional.ofNullable(Optional.ofNullable(userRepository.findByUsername(username))
+                .orElseThrow(() -> new ApiNotFoundException(String.format("User %s was not found.", username))));
 
         return new UserRestModel(user.get());
     }
 
 
     private UsersEntity mapRestModel(final UserRestModel model) {
-        UsersEntity userToAdd = new UsersEntity(model.getLogin(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
+        UsersEntity userToAdd = new UsersEntity(model.getUsername(), model.getPassword(), model.getEmail(), model.getFirstname(), model.getLastname(), model.getSex(), model.getStatus());
         AddressesEntity addressOfUser = new AddressesEntity(
                 model.getAddressRestModel().getStreet(),
                 model.getAddressRestModel().getBuilding_num(),
